@@ -1,0 +1,100 @@
+#include<iostream>
+#include<cstdio>
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include<vector>
+
+using namespace std;
+
+int used[26];
+int qCount,count;
+
+int main(){
+    string s;
+    getline(cin,s);
+    if(s.length()<26){
+        cout << -1 << endl;
+        return 0;
+    }
+    for(int i = 0; i < 26; i++){
+        if(s[i]=='?'){
+            qCount++;
+        } else {
+            int v = ((int)s[i])-((int)'A');
+            if(used[v]==0){
+                used[v]=1;
+                count++;
+            } else used[v]++;
+        }
+    }
+    /*printf("Count: %d, qCount:%d\n",count,qCount);
+    for(int i = 0; i < 26; i++){
+        printf("%d",used[i]);
+    }
+    cout << endl;
+    cout << s.length() << endl;*/
+    bool b = false;
+    int res = -1;
+    if(count+qCount==26){
+        b=true;
+        res = 0;
+    }
+    if(!b){
+        for(int i = 0; i < s.length()-24&&!b; i++){
+            if(s[i]=='?'){
+                qCount--;
+            } else {
+                int v = ((int)s[i])-((int)'A');
+                if(used[v]==1){
+                    used[v]=0;
+                    count--;
+                } else used[v]--;
+            }
+            if(s[i+26]=='?'){
+                qCount++;
+            } else {
+                int v = ((int)s[i+26])-((int)'A');
+                if(used[v]==0){
+                    used[v]=1;
+                    count++;
+                } else used[v]++;
+            }
+            if(count+qCount==26){
+                res = i+1;
+                b=true;
+            }
+            //printf("i:%d, Count: %d, qCount:%d\n",i,count,qCount);
+            /*for(int i = 0; i < 26; i++){
+                printf("%d",used[i]);
+            }
+            cout << endl;*/
+        }
+    }
+    //cout << res << endl;
+    if(res!=-1){
+        for(int i = 0; i <res; i++){
+            if(s[i]=='?')printf("%c",'A');
+            else printf("%c",s[i]);
+        }
+        for(int i = res; i < res+26; i++){
+            if(s[i]=='?'){
+                for(int j = 0; j < 26; j++){
+                    if(!used[j]){
+                        char c = ((char)(j+((int)'A')));
+                        printf("%c",c);
+                        used[j]=true;
+                        break;
+                    }
+                }
+            }else printf("%c",s[i]);
+        }
+        for(int i = res+26; i <s.length(); i++){
+            if(s[i]=='?')printf("%c",'A');
+            else printf("%c",s[i]);
+        }
+    }else cout << -1;
+    cout << endl;
+    return 0;
+}
