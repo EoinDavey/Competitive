@@ -42,7 +42,7 @@ int main(){
         res = 0;
     }
     if(!b){
-        for(int i = 0; i < s.length()-24&&!b; i++){
+        for(int i = 0; i < s.length()-26&&!b; i++){
             if(s[i]=='?'){
                 qCount--;
             } else {
