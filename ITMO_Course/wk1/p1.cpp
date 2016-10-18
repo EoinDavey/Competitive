@@ -3,13 +3,10 @@
 #include<cmath>
 #include<string>
 #include<vector>
-#include<iomanip>
-#define FILE_IN "file"
-#define FILE_OUT "file"
 #ifdef JUDGE
 #include<fstream>
-std::ifstream cin(FILE_IN);
-std::ofstream cout(FILE_OUT);
+std::ifstream cin("aplusb.in");
+std::ofstream cout("aplusb.out");
 #else
 #include<iostream>
 #endif
@@ -17,5 +14,8 @@ std::ofstream cout(FILE_OUT);
 using namespace std;
 
 int main(){
+    int A,B;
+    cin >> A >> B;
+    cout << A + B << endl;
     return 0;
 }
