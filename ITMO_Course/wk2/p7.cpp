@@ -4,6 +4,7 @@
 #include<string>
 #include<vector>
 #include<iomanip>
+#include<stack>
 #define FILE_IN "stacks.in"
 #define FILE_OUT "stacks.out"
 #ifdef JUDGE
@@ -16,17 +17,39 @@ std::ofstream cout(FILE_OUT);
 
 using namespace std;
 
-vector<int> stacks;
-int lastMin = 0;
 
 int main(){
     int N;
     cin >> N;
-    int nonEmpty= 0;
-    int a;
-    bool newStack=false;
-    for(int i = 0; i < N; i++){
+    int in;
+    int max = 0;
+    int nStacks = 0;
+    stack<int> s;
+    for(int i = 0; i< N; i++){
+        cin >> in;
+        if(in>0||i==0)nStacks++;
+        s.push(in);
     }
-    cout << stacks[0] << endl;
+    int c = nStacks-1;
+    int stacks[nStacks];
+    memset(stacks,0,sizeof(stacks));
+    while(!s.empty()){
+        int p = s.top();s.pop();
+        if(c<0)c=nStacks-1;
+        stacks[c--]++;
+        if(p>0||s.size()==1){
+            //drop stack
+            nStacks--;
+            if(c==nStacks)c--;
+        }
+        for(int i = 0; i <sizeof(stacks)/sizeof(int); i++){
+            cout << stacks[i] << ",";
+        }
+        cout << endl;
+    }
+    for(int i = 0; i <sizeof(stacks)/sizeof(int); i++){
+        if(stacks[i]>max)max=stacks[i];
+    }
+    cout << max << endl;
     return 0;
 }
