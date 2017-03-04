@@ -65,6 +65,11 @@ int main(){
                     q.push(entry(e.y+1, e.x+2, e.d+1));
         }
     }
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++)
+            printf("%d",dis[i][j]);
+        cout << endl;
+    }
     cout << dis[fx][fy] << endl;
     return 0;
 }
