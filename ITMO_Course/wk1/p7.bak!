@@ -1,0 +1,53 @@
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+#include<string>
+#include<vector>
+#include<iomanip>
+#define FILE_IN "testgen.in"
+#define FILE_OUT "testgen.out"
+#ifdef JUDGE
+#include<fstream>
+std::ifstream cin(FILE_IN);
+std::ofstream cout(FILE_OUT);
+#else
+#include<iostream>
+#endif
+
+using namespace std;
+
+int K;
+bool sieve[3202];
+vector<int> primes;
+
+int main(){
+    for(int i = 2; i < 3200; i++){
+        if(!sieve[i]){
+            for(int j = i; j < 3200; j+=i){
+                sieve[j]=true;
+            }
+            if(i<3200) primes.push_back(i);
+        }
+    }
+    int c,cP,ans;
+    c=2;
+    cP = 1;
+    ans = 0;
+    cin >> K;
+    while(true){
+        int nextP = c * primes[cP];
+        int incr = 2*c;
+        if(nextP > K&&incr>K){
+            ans = c;
+            break;
+        }else if(nextP >K){
+            ans = incr;
+            break;
+        }else{
+            c = nextP;
+            cP++;
+        }
+    }
+    cout << (K-ans)+1 << endl;
+    return 0;
+}
