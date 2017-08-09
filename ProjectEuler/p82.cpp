@@ -22,15 +22,17 @@ struct path{
     }
 };
 
-int moves[][2] = {{0,1},{1,0}};
+int moves[][2] = {{0,1},{-1,0},{1,0}};
 
 int main(){
     for(int i = 0; i < N; i++)
         for(int j = 0; j < N; j++)
             scanf("%d,",&board[i][j]),dist[i][j]=INF;
-    dist[0][0] = board[0][0];
     priority_queue<path>  q;
-    q.push(path(0,0,board[0][0]));
+    for(int i = 0; i < N; i++){
+        dist[i][0] = board[i][0];
+        q.push(path(i,0,board[i][0]));
+    }
     int x,y,d,nx,ny,nd;
     while(!q.empty()){
         path p = q.top(); q.pop();
@@ -38,7 +40,7 @@ int main(){
         if(dist[x][y] < d)
             continue;
         dist[x][y]=d;
-        for(int i = 0; i < 2; i++){
+        for(int i = 0; i < 3; i++){
             nx=x+moves[i][0]; ny=y+moves[i][1];
             if(nx < 0 || nx >=N || ny < 0 || ny >= N)
                 continue;
@@ -47,6 +49,9 @@ int main(){
                 q.push(path(nx,ny,nd));
         }
     }
-    printf("%d\n",dist[N-1][N-1]);
+    int mn = INF;
+    for(int i = 0; i < N; i++)
+        mn = min(mn,dist[i][N-1]);
+    printf("%d\n",mn);
     return 0;
 }
