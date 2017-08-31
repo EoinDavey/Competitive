@@ -30,6 +30,8 @@ int main(){
         for(int j = 0; j < C; j++){
             if(v.empty() || h[i][j] > h[i][v.back()])
                 v.push_back(j);
+            while(!v.empty() && h[i][j] < h[i][v.back()])
+                v.pop_back();
             for(auto k = v.begin(); k != v.end(); k++){
                 p[i][j] = max(p[i][j],perim(h[i][*k], j - *k + 1));
             }
