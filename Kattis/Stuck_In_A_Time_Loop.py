@@ -1,3 +1,1 @@
-N = int(raw_input())
-for i in range(1,N+1):
-    print "%d Abracadabra" % i
+print "\n".join([("%d Abracadabra" % i) for i in range(1,int(raw_input())+1)])
