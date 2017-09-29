@@ -9,11 +9,11 @@ int SX,SY,TX,TY;
 
 constexpr int moves[][2] = {{0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}};
 
-int dist(int x1, int y1, int x2, int y2){
+inline int dist(int x1, int y1, int x2, int y2){
     return max(abs(x1-x2),abs(y1-y2));
 }
 
-bool valid(int x, int y){
+inline bool valid(int x, int y){
     return x >= 0 && y >= 0 && x < N && y < N;
 }
 
