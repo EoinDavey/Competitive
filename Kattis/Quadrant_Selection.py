@@ -1,1 +1,1 @@
-print "1423"[((int(raw_input()) < 0)*2)|(int(raw_input())<0)]
+print "1423"[2*(input()<0)+(input()<0)]
