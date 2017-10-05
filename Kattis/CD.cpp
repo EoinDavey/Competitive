@@ -1,10 +1,10 @@
 #include<cstdio>
-#include<unordered_set>
-using namespace std;
 
+constexpr int MX_N=1000001;
 int N,M,in;
+int a[MX_N];
 
-int read_int(){
+inline int read_int(){
     char c;
     int out = 0;
     while(1){
@@ -24,16 +24,17 @@ int main(){
         N = read_int(); M = read_int();
         if(!N && !M)
             break;
-        unordered_set<int> s1;
         for(int i = 0; i < N; i++)
-            s1.insert(read_int());
-        unordered_set<int> s2;
-        for(int i = 0; i < M; i++)
-            s2.insert(read_int());
+            a[i] = read_int();
+        int ind = 0;
         int cnt = 0;
-        for(auto i = s1.begin(); i != s1.end(); i++)
-            if(s2.find(*i)!=s2.end())
+        for(int i = 0; i < M; ++i){
+            int n = read_int();
+            while(a[ind] < n && ind < N)
+                ind++;
+            if(a[ind]==n)
                 cnt++;
+        }
         printf("%d\n",cnt);
     }
     return 0;
