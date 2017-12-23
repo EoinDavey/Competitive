@@ -1,0 +1,1 @@
+print (lambda e,f: (lambda c,d: "\n".join(map(lambda x: "YODA" if x=="" else str(int(x)),reduce(lambda (x,y),(a,b): (x+["",a][ord(a) >= ord(b)],y+["",b][ord(b) >= ord(a)]),zip(c,d),("","")))))("0"*(len(f)-len(e)) + e,"0"*(len(e)-len(f)) + f))(raw_input(),raw_input())
