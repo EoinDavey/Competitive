@@ -1,89 +1,68 @@
-#include <bits/stdc++.h>
-#define rep(_v, _e) for (decltype(_e) _v  = 0; _v < _e; _v++)
+#include<bits/stdc++.h>
 using namespace std;
 
-static int overlap(int a1, int a2, int b1, int b2) {
-    int la = min(a1, a2);
-    int lb = min(b1, b2);
-    int ma = max(a1, a2);
-    int mb = max(b1, b2);
+struct trip {
+    int a,b,c;
+    trip(int _a, int _b, int _c) : a(_a),b(_b),c(_c){}
+    trip(){}
+    bool operator== (const trip& p) const {
+        return a==p.a && b==p.b && c==p.c;
+    }
+    bool operator!= (const trip& p) const {
+        return !(*this == p);
+    }
+    trip operator+ (const trip& p) const {
+        return trip(a+p.a,b+p.b,c+p.c);
+    }
+};
 
-    // No overlap
-    if (la >= mb || lb >= ma) return 0;
-    // Complete overlap
-    if ((la <= lb && ma >= mb) || (lb <= la && mb >= ma)) return 1;
-    // Check if colliding?
-    return (a1 < a2 && b2 < b1) || (a1 > a2 && b2 > b1);
+trip st1,st2,ed1,ed2;
+
+trip moveTow(trip d, trip e){
+    trip out(0,0,0);
+    if(d.a!=e.a){
+        out.a+=(d.a > e.a) ? -1 : 1;
+    } else if(d.b!=e.b){
+        out.b+=(d.b > e.b) ? -1 : 1;
+    } else if(d.c!=e.c){
+        out.c+=(d.c > e.c) ? -1 : 1;
+    }
+    return out;
 }
 
-int b[2][2][3]; // bot, kind, xyz
-int md[2];
-vector<int> dirs[2];
-
-static void pc() {
-    printf("(%d %d %d) (%d %d %d)\n",
-            b[0][0][0], b[0][0][1], b[0][0][2],
-            b[1][0][0], b[1][0][1], b[1][0][2]);
+trip moveRnd(){
+    int dir = (rand() % 7);
+    switch(dir){
+        case 0:
+            return trip(0,0,0);
+        case 1:
+            return trip(0,0,1);
+        case 2:
+            return trip(0,0,-1);
+        case 3:
+            return trip(0,1,0);
+        case 4:
+            return trip(0,-1,0);
+        case 5:
+            return trip(1,0,0);
+        default:
+            return trip(-1,0,0);
+    }
 }
 
-static int sgn(int a) {
-    return (a > 0) - (a < 0);
-}
-
-static void mv(int x) {
-    if (dirs[x].empty()) return;
-    int d = dirs[x][0];
-    b[x][0][d] += sgn(b[x][1][d] - b[x][0][d]);
-    if (b[x][0][d] == b[x][1][d]) dirs[x].erase(dirs[x].begin());
-
-    printf("CHECK ");
-    pc();
-    assert(!(b[0][0][0] == b[1][0][0] && b[0][0][1] == b[1][0][1] && b[0][0][2] == b[1][0][2]));
-}
-
-int main() {
-    rep(i, 2) rep(j, 2) rep(k, 3) {
-        cin >> b[i][j][k];
+int main(){
+    scanf("%d %d %d %d %d %d",&st1.a,&st1.b,&st1.c,&ed1.a,&ed1.b,&ed1.c);
+    scanf("%d %d %d %d %d %d",&st2.a,&st2.b,&st2.c,&ed2.a,&ed2.b,&ed2.c);
+    while(st1!=ed1 || st2 != ed2){
+        printf("(%d %d %d) (%d %d %d)\n",st1.a,st1.b,st1.c,st2.a,st2.b,st2.c);
+        trip nst1 = st1+moveTow(st1,ed1);
+        trip nst2 = st2+moveTow(st2,ed2);
+        while(nst1 == nst2 || (nst1==st2 && nst2 == st1)){
+            nst1 = st1+moveRnd();
+        }
+        st1=nst1;
+        st2=nst2;
     }
-
-    int oc = 0;
-    int la = -1;
-    int nudge, tonudge = 0;
-
-    rep (i, 3) {
-        int t =  overlap(b[0][0][i], b[0][1][i], b[1][0][i], b[1][1][i]);
-        if (t) la = i;
-        oc += t;
-
-        if (b[0][0][i] != b[0][1][i]) dirs[0].push_back(i);
-        md[0] += abs(b[0][0][i] - b[0][1][i]);
-        md[1] += abs(b[1][0][i] - b[1][1][i]);
-    }
-
-    for (int i = 2; i >= 0; i--) {
-        if (b[1][0][i] != b[1][1][i]) dirs[1].push_back(i);
-    }
-    if (dirs[1].size() >= 2) swap(dirs[1][0], dirs[1][1]);
-
-    pc();
-    if (oc == 1) {
-        nudge = ((la + 1) % 3);
-        if (md[0] > md[1]) tonudge = 1;
-        b[tonudge][0][nudge]++;
-        mv(!tonudge);
-        pc();
-    }
-
-    while (!dirs[0].empty() || !dirs[1].empty()) {
-        mv(0);
-        mv(1);
-        pc();
-    }
-
-    if (oc == 1) {
-        b[tonudge][0][nudge]--;
-        pc();
-    }
-
+    printf("(%d %d %d) (%d %d %d)\n",st1.a,st1.b,st1.c,st2.a,st2.b,st2.c);
     return 0;
 }
