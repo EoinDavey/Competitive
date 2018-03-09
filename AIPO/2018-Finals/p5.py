@@ -1,8 +1,6 @@
-from functools import reduce
 s = input()
 N = int(input())
 l = len(s)
-
 
 ls = []
 ln = 1
@@ -13,4 +11,5 @@ for i in range(l):
             ls.append(ln)
         ln = 0
     ln += 1
+
 print(sum(sorted(ls)[:-N]))
