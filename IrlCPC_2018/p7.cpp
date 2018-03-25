@@ -9,17 +9,31 @@ int memo[MX_N][MX_SZ];
 int hands[MX_N][4];
 
 map<int,string> mp;
+
+int val(const string &a){
+	if(a == "J")
+		return 9;
+	if(a == "Q")
+		return 10;
+	if(a == "K")
+		return 11;
+	if(a == "A")
+		return 12;
+	int out = 0;
+	for(char c : a){
+		out = out*10 + (c-'0');
+	}
+	return out-2;
+}
+
 bool dp(int p, int st){
 	if(p==N)
 		return st == (1<<13)-1;
 	if(memo[p][st]!=-1)
 		return memo[p][st];
-	for(int i = 0; i < 4; ++i){
-		if((st&(1<<hands[p][i]))==0){
-			if(dp(p+1,st|(1<<hands[p][i])))
-				return memo[p][st] = true;
-		}
-	}
+	for(int i = 0; i < 4; ++i)
+		if(((st&(1<<hands[p][i]))==0) && (dp(p+1,st|(1<<hands[p][i]))))
+            return memo[p][st] = true;
 	return memo[p][st] = false;
 }
 
@@ -42,23 +56,9 @@ void pr(int p, int st){
 	}
 }
 
-int val(const string &a){
-	if(a == "J")
-		return 9;
-	if(a == "Q")
-		return 10;
-	if(a == "K")
-		return 11;
-	if(a == "A")
-		return 12;
-	int out = 0;
-	for(char c : a){
-		out = out*10 + (c-'0');
-	}
-	return out-2;
-}
-
 int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 	N = 13;
 	string tmp;
 	memset(memo,-1,sizeof(memo));
