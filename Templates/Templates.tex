@@ -1,8 +1,10 @@
 \documentclass[]{article}
 \usepackage{verbatim}
 \usepackage[a4paper,margin=1in]{geometry}
+\usepackage{multicol}
 \begin{document}
     \title{Templates}
+    \begin{multicols*}{2}
     {\tiny
     \section{BFS}
     \verbatiminput{BFS.cpp}
@@ -20,6 +22,8 @@
     \verbatiminput{MCBM.cpp}
     \section{MST}
     \verbatiminput{MST.cpp}
+    \section{LCA}
+    \verbatiminput{LCA.cpp}
     \section{Segment Tree}
     \verbatiminput{Segment_Tree.cpp}
     \section{RectInHist}
@@ -36,5 +40,6 @@
     \verbatiminput{UFDS.cpp}
     \section{vimrc}
     \verbatiminput{.vimrc}
-  }
+}
+\end{multicols*}
 \end{document}

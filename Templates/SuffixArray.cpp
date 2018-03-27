@@ -1,7 +1,3 @@
-#include<bits/stdc++.h>
-using namespace std;
-
-const int MX_N = 200020;
 char * buff;
 int RA[MX_N],SA[MX_N],tempRA[MX_N],tempSA[MX_N],N,c[MX_N];
 

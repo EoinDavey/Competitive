@@ -1,19 +1,13 @@
-#include<bits/stdc++.h>
-using namespace std;
-
 struct point{
     int x,y;
     point(int _x, int _y) : x(_x), y(_y) {}
     point() {}
-
     point operator+ (const point &p){
         return point(x+p.x,y+p.y);
     }
-
     point operator- (const point &p) const{
         return point(x-p.x,y-p.y);
     }
-
     bool operator== (const point& p) const {
         return x==p.x && y==p.y;
     }
@@ -56,7 +50,8 @@ int main(){
         scanf("%d %d",&vertices[i].x,&vertices[i].y);
     int pos = 0;
     for(int i = 0; i < N; i++)
-        if(vertices[i].y < vertices[pos].y || (vertices[i].y==vertices[pos].y && (vertices[i].x > vertices[pos].x)))
+        if(vertices[i].y < vertices[pos].y ||
+                (vertices[i].y==vertices[pos].y && (vertices[i].x > vertices[pos].x)))
             pos = i;
     point _tp = vertices[0];
     vertices[0] = vertices[pos];

@@ -1,7 +1,3 @@
-#include<bits/stdc++.h>
-using namespace std;
-
-const int MX_RC=1000;
 int R,C;
 char board[MX_RC][MX_RC];
 int h[MX_RC][MX_RC];
@@ -13,10 +9,6 @@ int perim(int l, int w){
 }
 
 int main(){
-    scanf("%d %d",&R,&C);
-    for(int i = 0; i < R; i++)
-        for(int j = 0; j < C; j++)
-            scanf(" %c",&board[i][j]);
     for(int i = 0; i < R; i++){
         int run=0;
         for(int j = 0; j < C; j++){
@@ -49,5 +41,4 @@ int main(){
         }
     }
     printf("%d\n",mx-1);
-    return 0;
 }

@@ -1,7 +1,3 @@
-#include<bits/stdc++.h>
-using namespace std;
-constexpr int INF= 100000000;
-constexpr int MX_N = 100000;
 int dist[MX_N];
 vector<int> adjList[MX_N];
 

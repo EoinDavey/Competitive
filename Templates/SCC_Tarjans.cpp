@@ -1,6 +1,5 @@
 typedef pair<int, int> ii;
 
-const int MX_N = 20002;
 int N,M;
 vector<int> adjList[MX_N];
 int dfs_num[MX_N],dfs_low[MX_N];

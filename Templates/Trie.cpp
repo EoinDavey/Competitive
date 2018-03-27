@@ -1,5 +1,3 @@
-#include<bits/stdc++.h>
-using namespace std;
 struct node {
     node * children[26];
     int count;

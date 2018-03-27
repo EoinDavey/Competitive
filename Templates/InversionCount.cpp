@@ -1,7 +1,3 @@
-#include<bits/stdc++.h>
-using namespace std;
-const int MX_N = 1000111;
-
 int N;
 int a[MX_N];
 long long cnt=0;
@@ -31,13 +27,4 @@ void mergesort(int L, int R){
     }
     for(int j= L; j <= R; j++)
         a[j]=n[j-L];
-}
-
-int main(){ 
-    scanf("%d",&N);
-    for(int i = 0; i < N; i++)
-        scanf("%d",&a[i]);
-    mergesort(0,N-1);
-    printf("%lld\n",cnt);
-    return 0;
 }
