@@ -1,10 +1,8 @@
-\documentclass[]{article}
+\documentclass[twocolumn]{article}
 \usepackage{verbatim}
 \usepackage[a4paper,margin=1in]{geometry}
-\usepackage{multicol}
 \begin{document}
     \title{Templates}
-    \begin{multicols*}{2}
     {\tiny
     \section{BFS}
     \verbatiminput{BFS.cpp}
@@ -12,6 +10,7 @@
     \verbatiminput{Convex_Hull.cpp}
     \section{Dijkstras}
     \verbatiminput{Dijkstras.cpp}
+    \newpage
     \section{Fenwick}
     \verbatiminput{Fenwick.cpp}
     \section{Inversion Count}
@@ -22,14 +21,19 @@
     \verbatiminput{MCBM.cpp}
     \section{MST}
     \verbatiminput{MST.cpp}
+    \newpage
     \section{LCA}
     \verbatiminput{LCA.cpp}
     \section{Segment Tree}
     \verbatiminput{Segment_Tree.cpp}
+    \newpage
     \section{RectInHist}
     \verbatiminput{RectInHist.cpp}
     \section{SCC Tarjans}
     \verbatiminput{SCC_Tarjans.cpp}
+    \newpage
+    \section{AP \& Bridges}
+    \verbatiminput{AP_Bridges.cpp}
     \section{Sparse Table}
     \verbatiminput{Sparse_Table.cpp}
     \section{Suffix Array}
@@ -41,5 +45,4 @@
     \section{vimrc}
     \verbatiminput{.vimrc}
 }
-\end{multicols*}
 \end{document}
