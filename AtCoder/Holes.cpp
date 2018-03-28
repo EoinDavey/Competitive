@@ -1,4 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
 typedef complex<double> point;
+
+constexpr int MX_N=101;
+int N;
+point V[MX_N];
+int perm[MX_N];
+double out[MX_N];
 
 double cross(const point& a, const point& b){
     return real(a)*imag(b) - imag(a)*real(b);
@@ -14,7 +22,11 @@ bool ccw(const point& a,const point& b, const point& c){
 }
 
 int main(){
+    scanf("%d",&N);
+    double x,y;
     for(int i = 0; i < N; i++){
+        scanf("%lf %lf",&x,&y);
+        V[i]=point(x,y);
         perm[i]=i;
     }
     sort(perm,perm+N,
@@ -25,7 +37,8 @@ int main(){
                     return real(pa) < real(pb);
                 return imag(pa) < imag(pb);
             });
-    vector<int> L; vector<int> U;
+    vector<int> L;
+    vector<int> U;
     for(int i = 0; i < N;){
         int t = L.size();
         if(t >= 2 && !ccw(V[L[t-2]],V[L[t-1]],V[perm[i]]))
@@ -45,5 +58,22 @@ int main(){
         hull.push_back(L[i]);
     for(int i = 0; i < U.size()-1; ++i)
         hull.push_back(U[i]);
+    int h = hull.size();
+    if(h == 2){
+        out[hull[0]] = out[hull[1]] = 0.5;
+    } else {
+        for(int i = 0;i < h; ++i){
+            point a = V[hull[(h+(i-1))%h]];
+            point b = V[hull[i]];
+            point c = V[hull[(i+1)%h]];
+            point ab = (b-a)*point(0,1);
+            point cb = (b-c)*point(0,-1);
+            double ang = abs(arg(ab)-arg(cb))/(2*M_PI);
+            out[hull[i]] = min(1-ang,ang);
+        }
+    }
+    for(int i = 0; i < N; ++i){
+        printf("%.16lf\n",out[i]);
+    }
     return 0;
 }
