@@ -1,11 +1,9 @@
 *.in
 *.out
 *.test
-Google Code Jam/
-Childline Problems/
-IrlCPC/
 compthinkingchallenge.java
 problems.zip
+test
 *~
 *.swp
 *.swo
