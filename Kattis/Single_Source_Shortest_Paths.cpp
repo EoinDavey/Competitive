@@ -4,6 +4,7 @@
 #include<queue>
 using namespace std;
 typedef pair<int,int> ii;
+
 struct path {
     int u,d;
     path(int _u, int _d) : u(_u), d(_d) {}

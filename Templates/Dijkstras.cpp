@@ -1,19 +1,26 @@
-dist[rs][cs] = 0;
+struct path {
+    int u,d;
+    path(int _u, int _d) : u(_u), d(_d) {}
+    path(){}
+    bool operator < (const path& p) const { 
+        return d > p.d;
+    }
+};
+for(int i =0; i < N; ++i)
+    dist[i] = INF;
+dist[S] = 0;
 priority_queue<path> q;
-q.push(path(rs,cs,0));
+q.push(path(S,0));
 while(!q.empty()){
     path p = q.top(); q.pop();
-    ux = p.ux, uy=p.uy,d=p.d;
-    if(dist[ux][uy] < d)
+    u = p.u,d = p.d;
+    if(dist[u] < d)
         continue;
-    for(int i = 0; i < 8; ++i){
-        nx = ux+moves[i][0];
-        ny = uy+moves[i][1];
-        nd = d+(board[ux][uy]!=i);
-        if(valid(nx,ny) && dist[nx][ny] > nd){
-            dist[nx][ny] = nd;
-            q.push(path(nx,ny,nd));
+    for(auto v : adjList[u]){
+        nd = d + v.second;
+        if(nd < dist[v.first]){
+            dist[v.first] = nd;
+            q.push(path(v.first,nd));
         }
     }
 }
-printf("%d\n",dist[rd][cd]);
