@@ -3,8 +3,8 @@ inline int rmq(int u, int v){
         return -2000000000;
     int k = (int) floor(log2((double) (v-u+1)));
     if(r[mtable[u][k]] > r[mtable[v-(1<<k) + 1][k]])
-        return r[mtable[u][k]];
-    return r[mtable[v-(1<<k) + 1][k]];
+        return mtable[u][k];
+    return mtable[v-(1<<k) + 1][k];
 }
 
 for(int i = 0; i < N; i++)
