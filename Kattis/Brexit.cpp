@@ -1,34 +1,54 @@
-#include<bits/stdc++.h>
-using namespace std;
+#include<cstdio>
+#include<queue>
 const int MX_N = 200002;
-vector<int> adjList[MX_N];
+std::vector<int> adjList[MX_N];
 int nCount[MX_N];
 bool out[MX_N];
-int C,P,X,L;
+int C,P,X,L,o,a,b,u,v;
+char c;
+
+inline int read_int(){
+    o = 0;
+    while(1){
+        c = getchar_unlocked();
+        if(c >= '0' && c <= '9')
+            break;
+    }
+    while(c >= '0' && c <= '9'){
+        o = 10*o + c-'0';
+        c = getchar_unlocked();
+    }
+    return o;
+}
 
 int main(){
-    scanf("%d %d %d %d",&C,&P,&X,&L);
-    int a,b;
+    C = read_int();P = read_int(); X = read_int(); L = read_int();
     for(int i = 0; i < P; ++i){
-        scanf("%d %d",&a,&b);
+        a = read_int(); b = read_int();
         adjList[a].push_back(b);
-        nCount[a]++;
+        ++nCount[a];
         adjList[b].push_back(a);
-        nCount[b]++;
+        ++nCount[b];
     }
-    queue<int> q;
+    std::queue<int> q;
     q.push(L);
     while(!q.empty()){
-        int u = q.front();q.pop();
+        u = q.front();q.pop();
         if(out[u])
             continue;
         out[u] = true;
-        for(int v : adjList[u]){
+        for(int i = 0; i < adjList[u].size(); ++i){
+            v = adjList[u][i];
             if(out[v])
                 continue;
-            nCount[v]--;
-            if(nCount[v]*2 <= adjList[v].size())
+            --nCount[v];
+            if(nCount[v]*2 <= adjList[v].size()){
+                if(v==X){
+                    puts("leave");
+                    return 0;
+                }
                 q.push(v);
+            }
         }
     }
     if(out[X])
