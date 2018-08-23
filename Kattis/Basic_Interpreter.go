@@ -312,18 +312,17 @@ func (p *parser) parseIdent() *ident {
 
 func (p *parser) parseInt() (*intLit, error) {
     inv := p.accept(lexMINUS)
-	v, err := strconv.ParseInt(p.cur.Lit, 10, 32)
+	v, err := func() (int64, error) {
+        if inv {
+            return strconv.ParseInt("-" + p.cur.Lit, 10, 32)
+        }
+        return strconv.ParseInt(p.cur.Lit, 10, 32)
+    }()
 	if err != nil {
 		return nil, err
 	}
-	i := func() *intLit {
-        if inv {
-            return &intLit{val: int32(v*-1)}
-        }
-        return &intLit{val: int32(v)}
-    }()
 	p.accept(lexINT)
-	return i, nil
+    return &intLit{val: int32(v)}, nil
 }
 
 func (p *parser) parseArith() (Expression, error) {
@@ -372,7 +371,7 @@ func (p *parser) parseArith() (Expression, error) {
 func (p *parser) parseCond() (*boolExpr, error) {
 	defer untrace(trace("parse conditional statement"))
 	b := &boolExpr{}
-	if p.peek(lexINT) {
+	if p.peek(lexINT) || p.peek(lexMINUS) {
 		i, err := p.parseInt()
 		if err != nil {
 			return nil, err
@@ -390,7 +389,7 @@ func (p *parser) parseCond() (*boolExpr, error) {
 		return nil, fmt.Errorf("Expected < > <= <> = or >=")
 	}
 
-	if p.peek(lexINT) {
+	if p.peek(lexINT) || p.peek(lexMINUS) {
 		i, err := p.parseInt()
 		if err != nil {
 			return nil, err
@@ -607,7 +606,7 @@ var boolOps = map[string]func(int32, int32) bool{
 	"=":  func(x, y int32) bool { return x == y },
 }
 
-var mathOps = map[string]func(int32, int32) int32{
+var mathOps = map[string]func(int32, int32) int32 {
 	"+": func(x, y int32) int32 { return x + y },
 	"-": func(x, y int32) int32 { return x - y },
 	"*": func(x, y int32) int32 { return x * y },
@@ -659,6 +658,8 @@ func (j *jumpVal) String() string {
 
 var contVal = &contValImpl{}
 
+var defVal = &intVal{Value: 0}
+
 func Eval(n Node) (Val, error) {
 	switch t := n.(type) {
 	case *intLit:
@@ -666,7 +667,10 @@ func Eval(n Node) (Val, error) {
 	case *strLit:
 		return &strVal{Value: t.lit}, nil
 	case *ident:
-		return env[t.lit], nil
+        if g, ok := env[t.lit]; ok {
+            return g, nil
+        }
+        return defVal, nil
 	case *boolExpr:
 		l, err := Eval(t.left)
 		if err != nil {
