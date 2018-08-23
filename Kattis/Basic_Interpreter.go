@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
 const (
-	alpha    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	num      = "0123456789"
+	alpha         = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	num           = "0123456789"
 	alphaNumSpace = alpha + num + " "
 )
 
@@ -173,7 +174,7 @@ func (l *lexer) acceptRun(a string) {
 
 // BEGIN PARSER ----------------------------------------------------------------------------------------------------
 type parser struct {
-	l *lexer
+	l   *lexer
 	cur lexItem
 }
 
@@ -197,125 +198,356 @@ func (p *parser) expect(t lexType) error {
 	return nil
 }
 
+func (p *parser) peek(t lexType) bool {
+	return p.cur.Type == t
+}
+
 func (p *parser) accept(t lexType) bool {
-	defer untrace(trace(fmt.Sprintf("accept(%v), %v",t, p.cur)))
-	if p.cur.Type == t {
-		pD();
+	defer untrace(trace(fmt.Sprintf("accept(%v), %v", t, p.cur)))
+	if p.peek(t) {
+		pD()
 		p.next()
 		return true
 	}
 	return false
 }
 
-func (p *parser) parseLine() bool {
-	defer untrace(trace("parse line"));
-	if err := p.expect(lexINT); err != nil {
-		return false
-	}
-
-	// let statement
-	if p.accept(lexLET) {
-		if err := p.expect(lexIDENT); err != nil {
-			return false
+func (p *parser) peekR(t ...lexType) bool {
+	for _, tt := range t {
+		if p.peek(tt) {
+			return true
 		}
-		if err := p.expect(lexEQ); err != nil {
-			return false
-		}
-		if !p.parseArith() {
-			return false
-		}
-		return true
-	}
-
-	if p.accept(lexIF) {
-		if !p.parseCond() {
-			return false
-		}
-		if err := p.expect(lexTHEN); err != nil {
-			return false
-		}
-		if err := p.expect(lexGOTO); err != nil {
-			return false
-		}
-		if err := p.expect(lexINT); err != nil {
-			return false
-		}
-		return true
-	}
-	if p.accept(lexPRINT) {
-		if !p.parsePstmt() {
-			return false
-		}
-		return true
-	}
-	if p.accept(lexPRINTLN) {
-		if !p.parsePstmt() {
-			return false
-		}
-		return true
 	}
 	return false
 }
 
-func (p *parser) parseArith() bool {
-	defer untrace(trace("parse arithmetic statement"));
-	if !p.accept(lexINT) && !p.accept(lexIDENT) {
-		return false
-	}
-
-	if p.accept(lexPLUS) || p.accept(lexMINUS) ||
-		p.accept(lexTIMES) || p.accept(lexDIV) {
-
-		if !p.accept(lexINT) && !p.accept(lexIDENT) {
-			return false
+func (p *parser) acceptR(t ...lexType) bool {
+	for _, tt := range t {
+		if p.accept(tt) {
+			return true
 		}
 	}
-	return true
+	return false
 }
 
-func (p *parser) parseCond() bool {
-	defer untrace(trace("parse conditional statement"));
-	if !p.accept(lexINT) && !p.accept(lexIDENT) {
-		return false
+func (p *parser) parseLine() (*lineSt, error) {
+	defer untrace(trace("parse line"))
+	label, err := p.parseInt()
+	if err != nil {
+		return nil, fmt.Errorf("Line doesn't begin with label")
+	}
+	line := &lineSt{
+		label: label,
 	}
 
-	if !p.accept(lexGT) && !p.accept(lexGTE) &&
-		!p.accept(lexLT) && !p.accept(lexLTE) {
-		return false
+	// let statement
+	if p.accept(lexLET) {
+		l := &letStatement{
+			ident: p.parseIdent(),
+		}
+		if err := p.expect(lexEQ); err != nil {
+			return nil, err
+		}
+		a, err := p.parseArith()
+		if err != nil {
+			return nil, err
+		}
+		l.expr = a
+		line.st = l
+		return line, nil
 	}
 
-	if !p.accept(lexINT) && !p.accept(lexIDENT) {
-		return false
+	// if
+	if p.accept(lexIF) {
+		b, err := p.parseCond()
+		if err != nil {
+			return nil, err
+		}
+		c := &ifStatement{
+			cond: b,
+		}
+		if err := p.expect(lexTHEN); err != nil {
+			return nil, err
+		}
+		if err := p.expect(lexGOTO); err != nil {
+			return nil, err
+		}
+		i, err := p.parseInt()
+		if err != nil {
+			return nil, err
+		}
+		c.label = i
+		line.st = c
+		return line, nil
 	}
 
-	return true
+	if p.accept(lexPRINT) {
+		st, err := p.parsePstmt()
+		if err != nil {
+			return nil, err
+		}
+		line.st = st
+		return line, nil
+	}
+
+	if p.accept(lexPRINTLN) {
+		st, err := p.parsePlnstmt()
+		if err != nil {
+			return nil, err
+		}
+		line.st = st
+		return line, nil
+	}
+	return nil, fmt.Errorf("Unexpected token %s", p.cur)
 }
 
-func (p *parser) parsePstmt() bool {
-	defer untrace(trace("parse print statement"));
-	if !p.accept(lexSTRING) && !p.accept(lexIDENT) {
-		return false
+func (p *parser) parseIdent() *ident {
+	defer untrace(trace("parse ident"))
+	defer p.accept(lexIDENT)
+	return &ident{lit: p.cur.Lit}
+}
+
+func (p *parser) parseInt() (*intLit, error) {
+	v, err := strconv.ParseInt(p.cur.Lit, 10, 32)
+	if err != nil {
+		return nil, err
 	}
-	return true
+	i := &intLit{val: int32(v)}
+	p.accept(lexINT)
+	return i, nil
+}
+
+func (p *parser) parseArith() (*arithExpr, error) {
+	defer untrace(trace("parse arithmetic statement"))
+	a := &arithExpr{}
+	if p.peek(lexINT) {
+		i, err := p.parseInt()
+		if err != nil {
+			return nil, err
+		}
+		a.left = i
+	} else if p.peek(lexIDENT) {
+		a.left = p.parseIdent()
+	} else {
+		return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
+	}
+
+	if p.peekR(lexPLUS, lexMINUS, lexTIMES, lexDIV) {
+		a.op = p.cur.Lit
+
+		p.acceptR(lexPLUS, lexMINUS, lexTIMES, lexDIV)
+
+		if p.peek(lexINT) {
+			i, err := p.parseInt()
+			if err != nil {
+				return nil, err
+			}
+			a.right = i
+		} else if p.peek(lexIDENT) {
+			a.right = p.parseIdent()
+		} else {
+			return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
+		}
+	}
+	return a, nil
+}
+
+func (p *parser) parseCond() (*boolExpr, error) {
+	defer untrace(trace("parse conditional statement"))
+	b := &boolExpr{}
+	if p.peek(lexINT) {
+		i, err := p.parseInt()
+		if err != nil {
+			return nil, err
+		}
+		b.left = i
+	} else if p.peek(lexIDENT) {
+		b.left = p.parseIdent()
+	} else {
+		return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
+	}
+
+	b.op = p.cur.Lit
+
+	if !p.acceptR(lexGT, lexGTE, lexLT, lexLTE, lexEQ, lexNEQ) {
+		return nil, fmt.Errorf("Expected < > <= <> = or >=")
+	}
+
+	if p.peek(lexINT) {
+		i, err := p.parseInt()
+		if err != nil {
+			return nil, err
+		}
+		b.right = i
+	} else if p.peek(lexIDENT) {
+		b.right = p.parseIdent()
+	} else {
+		return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
+	}
+	return b, nil
+}
+
+func (p *parser) parsePstmt() (*prSt, error) {
+	defer untrace(trace("parse print statement"))
+	if p.peek(lexSTRING) {
+		return &prSt{s: p.parseString()}, nil
+	}
+	if p.peek(lexIDENT) {
+		return &prSt{s: p.parseIdent()}, nil
+	}
+	return nil, fmt.Errorf("Unexpected token %s, expected string or var", p.cur)
+}
+
+func (p *parser) parsePlnstmt() (*prlnSt, error) {
+	defer untrace(trace("parse printl statement"))
+	if p.peek(lexSTRING) {
+		return &prlnSt{s: p.parseString()}, nil
+	}
+	if p.peek(lexIDENT) {
+		return &prlnSt{s: p.parseIdent()}, nil
+	}
+	return nil, fmt.Errorf("Unexpected token %s, expected string or var", p.cur)
+}
+
+func (p *parser) parseString() *strLit {
+	defer p.accept(lexSTRING)
+	return &strLit{lit: p.cur.Lit[1 : len(p.cur.Lit)-1]}
 }
 
 // END PARSER ----------------------------------------------------------------------------------------------------
+
+// BEGIN AST ----------------------------------------------------------------------------------------------------
+
+type Statement interface {
+	statement()
+}
+type Expression interface {
+	expression()
+}
+
+type lineSt struct {
+	label *intLit
+	st    Statement
+}
+
+func (l *lineSt) String() string {
+	return fmt.Sprintf("%v (%v)", l.label, l.st)
+}
+
+type letStatement struct {
+	ident *ident
+	expr  *arithExpr
+}
+
+func (l *letStatement) statement() {}
+
+func (l *letStatement) String() string {
+	return fmt.Sprintf("LET %v = %v", l.ident, l.expr)
+}
+
+type ifStatement struct {
+	cond  *boolExpr
+	label *intLit
+}
+
+func (l *ifStatement) statement() {}
+
+func (l *ifStatement) String() string {
+	return fmt.Sprintf("IF(%v) THEN GOTO %v", l.cond, l.label)
+}
+
+type prSt struct {
+	s Expression
+}
+
+func (l *prSt) statement() {}
+
+func (l *prSt) String() string {
+	return fmt.Sprintf("PRINT(%v)", l.s)
+}
+
+type prlnSt struct {
+	s Expression
+}
+
+func (l *prlnSt) statement() {}
+
+func (l *prlnSt) String() string {
+	return fmt.Sprintf("PRINTLN(%v)", l.s)
+}
+
+type arithExpr struct {
+	left  Expression
+	right Expression
+	op    string
+}
+
+func (b *arithExpr) expression() {}
+
+func (b *arithExpr) String() string {
+	return fmt.Sprintf("(%v) %s (%v)", b.left, b.op, b.right)
+}
+
+type boolExpr struct {
+	left  Expression
+	right Expression
+	op    string
+}
+
+func (b *boolExpr) expression() {}
+
+func (b *boolExpr) String() string {
+	return fmt.Sprintf("(%v) %s (%v)", b.left, b.op, b.right)
+}
+
+type ident struct {
+	lit string
+}
+
+func (i *ident) expression() {}
+
+func (b *ident) String() string {
+	return fmt.Sprintf("{{%s}}", b.lit)
+}
+
+type intLit struct {
+	val int32
+}
+
+func (i *intLit) expression() {}
+
+func (i *intLit) String() string {
+	return fmt.Sprintf("%d", i.val)
+}
+
+type strLit struct {
+	lit string
+}
+
+func (i *strLit) expression() {}
+
+func (i *strLit) String() string {
+	return fmt.Sprintf("\"%s\"", i.lit)
+}
+
+// END AST ----------------------------------------------------------------------------------------------------
+
 // BEGIN TRACER ----------------------------------------------------------------------------------------------------
 
 var traceDepth = -1
 var traceActive = false
 
-func pD(){
+func pD() {
 	if traceActive {
 		for i := 0; i < traceDepth; i++ {
-			fmt.Printf("  ");
+			fmt.Printf("  ")
 		}
 	}
 }
 
 func untrace(msg string) {
 	if traceActive {
-		pD();
+		pD()
 		fmt.Println("END %s", msg)
 		traceDepth--
 	}
@@ -324,10 +556,16 @@ func untrace(msg string) {
 func trace(msg string) string {
 	if traceActive {
 		traceDepth++
-		pD();
+		pD()
 		fmt.Printf("BEGIN %s\n", msg)
 	}
 	return msg
+}
+func tracef(format string, args ...interface{}) {
+	if traceActive {
+		pD()
+		fmt.Println(fmt.Sprintf(format, args...))
+	}
 }
 
 // END TRACER ----------------------------------------------------------------------------------------------------
@@ -374,41 +612,51 @@ func main() {
 		}
 	}
 	for _, test := range []struct {
-		in  string
+		in    string
 		valid bool
 	}{
 		{
-			in: "10 LET a = 1",
+			in:    "10 LET a = 1",
 			valid: true,
 		},
 		{
-			in: "20 PRINT \"HELLO THERE\"",
+			in:    "20 PRINT \"HELLO THERE\"",
 			valid: true,
 		},
 		{
-			in: "30 PRINTLN A",
+			in:    "30 PRINTLN A",
 			valid: true,
 		},
 		{
-			in: "40 LET A = A + 1",
+			in:    "40 LET A = A + 1",
 			valid: true,
 		},
 		{
-			in: "50 IF A <= 5 THEN GOTO 20",
+			in:    "50 IF A <= 5 THEN GOTO 20",
 			valid: true,
 		},
 		{
-			in: "60 PRINTLN \"DONE\"",
+			in:    "60 PRINTLN \"DONE\"",
 			valid: true,
 		},
 		{
-			in: "10 La = 1",
+			in:    "10 La = 1",
+			valid: false,
+		},
+		{
+			in:    "50 IF A <= 5 THEN 20",
+			valid: false,
+		},
+		{
+			in:    "40 LET A = A +",
 			valid: false,
 		},
 	} {
 		p := newParser(test.in)
-		if p.parseLine() != test.valid {
-			fmt.Println("Failed on %s", test.in)
+		st, err := p.parseLine()
+		fmt.Printf("st: %s\n%v\n", test.in, st)
+		if (err == nil) != test.valid {
+			fmt.Println("Failed on %s: %v", test.in, err)
 			traceActive = true
 			p = newParser(test.in)
 			p.parseLine()
