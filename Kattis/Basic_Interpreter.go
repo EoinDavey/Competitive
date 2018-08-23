@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -308,36 +311,49 @@ func (p *parser) parseIdent() *ident {
 }
 
 func (p *parser) parseInt() (*intLit, error) {
+    inv := p.accept(lexMINUS)
 	v, err := strconv.ParseInt(p.cur.Lit, 10, 32)
 	if err != nil {
 		return nil, err
 	}
-	i := &intLit{val: int32(v)}
+	i := func() *intLit {
+        if inv {
+            return &intLit{val: int32(v*-1)}
+        }
+        return &intLit{val: int32(v)}
+    }()
 	p.accept(lexINT)
 	return i, nil
 }
 
-func (p *parser) parseArith() (*arithExpr, error) {
+func (p *parser) parseArith() (Expression, error) {
 	defer untrace(trace("parse arithmetic statement"))
-	a := &arithExpr{}
-	if p.peek(lexINT) {
-		i, err := p.parseInt()
-		if err != nil {
-			return nil, err
+	i, err := func() (Expression, error) {
+		if p.peek(lexINT) || p.peek(lexMINUS) {
+			i, err := p.parseInt()
+			if err != nil {
+				return nil, err
+			}
+			return i, nil
+		} else if p.peek(lexIDENT) {
+			return p.parseIdent(), nil
+		} else {
+			return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
 		}
-		a.left = i
-	} else if p.peek(lexIDENT) {
-		a.left = p.parseIdent()
-	} else {
-		return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
+	}()
+	if err != nil {
+		return nil, err
 	}
 
 	if p.peekR(lexPLUS, lexMINUS, lexTIMES, lexDIV) {
+		a := &arithExpr{
+			left: i,
+		}
 		a.op = p.cur.Lit
 
 		p.acceptR(lexPLUS, lexMINUS, lexTIMES, lexDIV)
 
-		if p.peek(lexINT) {
+		if p.peek(lexINT) || p.peek(lexMINUS) {
 			i, err := p.parseInt()
 			if err != nil {
 				return nil, err
@@ -348,8 +364,9 @@ func (p *parser) parseArith() (*arithExpr, error) {
 		} else {
 			return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
 		}
+		return a, nil
 	}
-	return a, nil
+	return i, nil
 }
 
 func (p *parser) parseCond() (*boolExpr, error) {
@@ -418,10 +435,17 @@ func (p *parser) parseString() *strLit {
 
 // BEGIN AST ----------------------------------------------------------------------------------------------------
 
+type Node interface {
+	String() string
+}
+
 type Statement interface {
+	Node
 	statement()
 }
+
 type Expression interface {
+	Node
 	expression()
 }
 
@@ -436,7 +460,7 @@ func (l *lineSt) String() string {
 
 type letStatement struct {
 	ident *ident
-	expr  *arithExpr
+	expr  Expression
 }
 
 func (l *letStatement) statement() {}
@@ -561,6 +585,7 @@ func trace(msg string) string {
 	}
 	return msg
 }
+
 func tracef(format string, args ...interface{}) {
 	if traceActive {
 		pD()
@@ -569,9 +594,161 @@ func tracef(format string, args ...interface{}) {
 }
 
 // END TRACER ----------------------------------------------------------------------------------------------------
+// BEGIN EVAL ----------------------------------------------------------------------------------------------------
+
+var env = make(map[string]Val)
+
+var boolOps = map[string]func(int32, int32) bool{
+	"<":  func(x, y int32) bool { return x < y },
+	">":  func(x, y int32) bool { return x > y },
+	">=": func(x, y int32) bool { return x >= y },
+	"<=": func(x, y int32) bool { return x <= y },
+	"<>": func(x, y int32) bool { return x != y },
+	"=":  func(x, y int32) bool { return x == y },
+}
+
+var mathOps = map[string]func(int32, int32) int32{
+	"+": func(x, y int32) int32 { return x + y },
+	"-": func(x, y int32) int32 { return x - y },
+	"*": func(x, y int32) int32 { return x * y },
+	"/": func(x, y int32) int32 { return x / y },
+}
+
+type Val interface {
+	String() string
+}
+
+type intVal struct {
+	Value int32
+}
+
+func (i *intVal) String() string {
+	return fmt.Sprintf("%v", i.Value)
+}
+
+type strVal struct {
+	Value string
+}
+
+func (i *strVal) String() string {
+	return fmt.Sprintf("%v", i.Value)
+}
+
+type boolVal struct {
+	Value bool
+}
+
+func (i *boolVal) String() string {
+	return fmt.Sprintf("%v", i.Value)
+}
+
+// continue to next line
+type contValImpl struct{}
+
+func (c *contValImpl) String() string {
+	return fmt.Sprintf("Continue")
+}
+
+type jumpVal struct {
+	label int32
+}
+
+func (j *jumpVal) String() string {
+	return fmt.Sprintf("%v", j.label)
+}
+
+var contVal = &contValImpl{}
+
+func Eval(n Node) (Val, error) {
+	switch t := n.(type) {
+	case *intLit:
+		return &intVal{Value: t.val}, nil
+	case *strLit:
+		return &strVal{Value: t.lit}, nil
+	case *ident:
+		return env[t.lit], nil
+	case *boolExpr:
+		l, err := Eval(t.left)
+		if err != nil {
+			return nil, err
+		}
+		r, err := Eval(t.right)
+		if err != nil {
+			return nil, err
+		}
+		li, ok := l.(*intVal)
+		if !ok {
+			return nil, fmt.Errorf("Incorrect types")
+		}
+		ri, ok := r.(*intVal)
+		if !ok {
+			return nil, fmt.Errorf("Incorrect types")
+		}
+		return &boolVal{Value: boolOps[t.op](li.Value, ri.Value)}, nil
+	case *arithExpr:
+		l, err := Eval(t.left)
+		if err != nil {
+			return nil, err
+		}
+		r, err := Eval(t.right)
+		if err != nil {
+			return nil, err
+		}
+		li, ok := l.(*intVal)
+		if !ok {
+			return nil, fmt.Errorf("Incorrect types")
+		}
+		if r != nil {
+			ri, ok := r.(*intVal)
+			if !ok {
+				return nil, fmt.Errorf("Incorrect types")
+			}
+			return &intVal{Value: mathOps[t.op](li.Value, ri.Value)}, nil
+		} else {
+			return &intVal{Value: li.Value}, nil
+		}
+	case *prSt:
+		l, err := Eval(t.s)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf(l.String())
+		return contVal, nil
+	case *prlnSt:
+		l, err := Eval(t.s)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(l.String())
+		return contVal, nil
+	case *ifStatement:
+		c, err := Eval(t.cond)
+		if err != nil {
+			return nil, err
+		}
+		b := c.(*boolVal)
+		if b.Value {
+			return &jumpVal{label: t.label.val}, nil
+		}
+        return contVal, nil
+	case *letStatement:
+		a, err := Eval(t.expr)
+		if err != nil {
+			return nil, err
+		}
+		v := a.(*intVal)
+		env[t.ident.lit] = v
+		return contVal, nil
+	case *lineSt:
+		return Eval(t.st)
+	}
+	return nil, fmt.Errorf("Unknown type %T", n)
+}
+
+// END EVAL ----------------------------------------------------------------------------------------------------
 
 func main() {
-	for _, test := range []struct {
+	/*for _, test := range []struct {
 		in  string
 		out []string
 	}{
@@ -654,13 +831,50 @@ func main() {
 	} {
 		p := newParser(test.in)
 		st, err := p.parseLine()
-		fmt.Printf("st: %s\n%v\n", test.in, st)
+		fmt.Println(st)
 		if (err == nil) != test.valid {
 			fmt.Println("Failed on %s: %v", test.in, err)
-			traceActive = true
-			p = newParser(test.in)
-			p.parseLine()
-			traceActive = false
+		}
+	}*/
+	lines := make(map[int]*lineSt)
+	nxt := make(map[int]int)
+	lineNs := []int{}
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		txt := scanner.Text()
+		if len(txt) == 0 {
+			continue
+		}
+		p := newParser(scanner.Text())
+		st, err := p.parseLine()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error parsing line: %v", err)
+			continue
+		}
+		lineN := st.label.val
+		lines[int(lineN)] = st
+		lineNs = append(lineNs, int(lineN))
+	}
+	sort.Ints(lineNs)
+	for i := 0; i < len(lineNs)-1; i++ {
+		nxt[lineNs[i]] = lineNs[i+1]
+	}
+	nxt[lineNs[len(lineNs)-1]] = -1
+	cur := lineNs[0]
+	for {
+		if cur == -1 {
+			break
+		}
+		v, err := Eval(lines[cur])
+		if err != nil {
+			fmt.Printf("Error while evaluating: %v\n", err)
+			break
+		}
+		switch t := v.(type) {
+		case *contValImpl:
+			cur = nxt[cur]
+		case *jumpVal:
+			cur = int(t.label)
 		}
 	}
 }
