@@ -15,6 +15,20 @@ const (
 	alphaNumSpace = alpha + num + " "
 )
 
+/*
+* valid Tarifa program
+*/
+const exampleProg = `10 LET X = READ
+20 LET N = READ
+30 LET S = 0
+40 LET I = 0
+50 LET IN = READ
+60 LET S = S + (X - IN)
+70 LET I = I+1
+80 IF I < N THEN GOTO 50
+90 PRINTLN S
+85 LET S = S + X`
+
 // BEGIN LEXER ---------------------------------------------------------------------------
 
 type lexType int
