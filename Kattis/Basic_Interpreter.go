@@ -40,6 +40,8 @@ const (
 	lexGTE
 	lexLTE
 	lexTHEN
+	lexLPAREN
+	lexRPAREN
 )
 
 type lexItem struct {
@@ -163,13 +165,16 @@ func (l *lexer) next() lexItem {
 		return l.emit(lexDIV)
 	case l.accept("="):
 		return l.emit(lexEQ)
+	case l.accept("("):
+		return l.emit(lexLPAREN)
+	case l.accept(")"):
+		return l.emit(lexRPAREN)
 	}
 	return l.emit(lexEOF)
 }
 
 func (l *lexer) acceptRun(a string) {
-	for strings.IndexByte(a, l.curCh) >= 0 {
-		l.nextChar()
+	for l.accept(a) {
 	}
 }
 
@@ -206,32 +211,23 @@ func (p *parser) peek(t lexType) bool {
 }
 
 func (p *parser) accept(t lexType) bool {
-	defer untrace(trace(fmt.Sprintf("accept(%v), %v", t, p.cur)))
 	if p.peek(t) {
-		pD()
 		p.next()
 		return true
 	}
 	return false
 }
 
-func (p *parser) peekR(t ...lexType) bool {
+func (p *parser) app(f func(lexType) bool, t... lexType) bool {
 	for _, tt := range t {
-		if p.peek(tt) {
+		if f(tt) {
 			return true
 		}
 	}
 	return false
 }
-
-func (p *parser) acceptR(t ...lexType) bool {
-	for _, tt := range t {
-		if p.accept(tt) {
-			return true
-		}
-	}
-	return false
-}
+func (p *parser) peekR(t ...lexType) bool { return p.app(p.peek, t...) }
+func (p *parser) acceptR(t ...lexType) bool { return p.app(p.accept, t...) }
 
 func (p *parser) parseLine() (*lineSt, error) {
 	defer untrace(trace("parse line"))
@@ -239,69 +235,185 @@ func (p *parser) parseLine() (*lineSt, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Line doesn't begin with label")
 	}
+	st, err := p.parseStatement()
+	if err != nil {
+		return nil, err
+	}
 	line := &lineSt{
 		label: label,
+		st: st,
 	}
+	return line, nil
+}
 
+func (p *parser) parseStatement() (Statement, error) {
+	defer untrace(trace("parse statement"))
 	// let statement
-	if p.accept(lexLET) {
-		l := &letStatement{
-			ident: p.parseIdent(),
-		}
-		if err := p.expect(lexEQ); err != nil {
-			return nil, err
-		}
-		a, err := p.parseArith()
-		if err != nil {
-			return nil, err
-		}
-		l.expr = a
-		line.st = l
-		return line, nil
+
+	if p.peek(lexLET) {
+		return p.parseLet()
 	}
 
-	// if
-	if p.accept(lexIF) {
-		b, err := p.parseCond()
-		if err != nil {
-			return nil, err
-		}
-		c := &ifStatement{
-			cond: b,
-		}
-		if err := p.expect(lexTHEN); err != nil {
-			return nil, err
-		}
-		if err := p.expect(lexGOTO); err != nil {
-			return nil, err
-		}
-		i, err := p.parseInt()
-		if err != nil {
-			return nil, err
-		}
-		c.label = i
-		line.st = c
-		return line, nil
+	if p.peek(lexIF) {
+		return p.parseIf()
 	}
 
-	if p.accept(lexPRINT) {
-		st, err := p.parsePstmt()
-		if err != nil {
-			return nil, err
-		}
-		line.st = st
-		return line, nil
+	if p.peek(lexPRINT) {
+		return p.parsePstmt()
 	}
 
-	if p.accept(lexPRINTLN) {
-		st, err := p.parsePlnstmt()
+	if p.peek(lexPRINTLN) {
+		return p.parsePlnstmt()
+	}
+
+	if p.peek(lexGOTO) {
+		return p.parseGOTO()
+	}
+
+	return nil, fmt.Errorf("Unexpected token %v", p.cur)
+}
+
+func (p *parser) parseGOTO() (Statement, error) {
+	defer untrace(trace("parse goto"))
+	p.accept(lexGOTO)
+	v, err := p.parseInt()
+	if err != nil {
+		return nil, err
+	}
+	return &gotoSt{label: int(v.val)}, nil
+}
+
+func (p *parser) parseLet() (Statement, error) {
+	defer untrace(trace("parse let"))
+	p.accept(lexLET)
+	l := &letStatement{
+		ident: p.parseIdent(),
+	}
+	if err := p.expect(lexEQ); err != nil {
+		return nil, err
+	}
+	a, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+	l.expr = a
+	return l, nil
+}
+
+func (p *parser) parseIf() (Statement, error) {
+	defer untrace(trace("parse if"))
+	p.accept(lexIF)
+	b, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+	c := &ifStatement{
+		cond: b,
+	}
+	if err := p.expect(lexTHEN); err != nil {
+		return nil, err
+	}
+	st, err := p.parseStatement()
+	if err != nil {
+		return nil, err
+	}
+	c.st = st
+	return c, nil
+}
+
+/*
+* Expression = Sum | Sum cmp Expression
+* cmp = [> < <= >= <> =]
+* Sum = Factor | Factor [+ -] Sum
+* Factor = At | At [* /] Factor
+* At = int | ident | (Expression)
+*/
+func(p *parser) parseExpression() (Expression, error) {
+	defer untrace(trace("parse expression"))
+	l, err := p.parseSum()
+	if err != nil {
+		return nil, fmt.Errorf("Error parsing expression: %v", err)
+	}
+	if !p.peekR(lexLT, lexGT, lexGTE, lexLTE, lexEQ, lexNEQ) {
+		return l, nil
+	}
+	op := p.cur.Lit
+	p.acceptR(lexLT, lexGT, lexGTE, lexLTE, lexEQ, lexNEQ)
+	r, err := p.parseExpression()
+	if err != nil {
+		return nil, fmt.Errorf("Error parsing expression: %v", err)
+	}
+	return &boolExpr{
+		left: l,
+		right: r,
+		op: op,
+	}, nil
+}
+
+func (p *parser) parseSum() (Expression, error) {
+	defer untrace(trace("parse sum"))
+	l, err := p.parseFactor()
+	if err != nil {
+		return nil, err
+	}
+	if !p.peekR(lexPLUS, lexMINUS) {
+		return l, nil
+	}
+	op := p.cur.Lit
+	p.acceptR(lexPLUS, lexMINUS)
+	r, err := p.parseSum()
+	if err != nil {
+		return nil, err
+	}
+	return &arithExpr{
+		left: l,
+		right: r,
+		op: op,
+	}, nil
+}
+
+func (p *parser) parseFactor() (Expression, error) {
+	defer untrace(trace("parse factor"))
+	l, err := p.parseAt()
+	if err != nil {
+		return nil, err
+	}
+	if !p.peekR(lexTIMES, lexDIV) {
+		return l, nil
+	}
+	op := p.cur.Lit
+	p.acceptR(lexTIMES, lexDIV)
+	r, err := p.parseFactor()
+	if err != nil {
+		return nil, err
+	}
+	return &arithExpr{
+		left: l,
+		right: r,
+		op: op,
+	}, nil
+}
+
+func (p *parser) parseAt() (Expression, error) {
+	defer untrace(trace("parse Atom"))
+	if p.peek(lexINT) || p.peek(lexMINUS) {
+		return p.parseInt()
+	}
+	if p.peek(lexIDENT) {
+		return p.parseIdent(), nil
+	}
+	if p.accept(lexLPAREN) {
+		st, err := p.parseExpression()
 		if err != nil {
 			return nil, err
 		}
-		line.st = st
-		return line, nil
+		err = p.expect(lexRPAREN)
+		if err != nil {
+			return nil, err
+		}
+		return st, nil
 	}
-	return nil, fmt.Errorf("Unexpected token %s", p.cur)
+	return nil, fmt.Errorf("Unexpected token: %v", p.cur)
 }
 
 func (p *parser) parseIdent() *ident {
@@ -311,118 +423,44 @@ func (p *parser) parseIdent() *ident {
 }
 
 func (p *parser) parseInt() (*intLit, error) {
-    inv := p.accept(lexMINUS)
+	inv := p.accept(lexMINUS)
 	v, err := func() (int64, error) {
-        if inv {
-            return strconv.ParseInt("-" + p.cur.Lit, 10, 32)
-        }
-        return strconv.ParseInt(p.cur.Lit, 10, 32)
-    }()
-	if err != nil {
-		return nil, err
-	}
-	p.accept(lexINT)
-    return &intLit{val: int32(v)}, nil
-}
-
-func (p *parser) parseArith() (Expression, error) {
-	defer untrace(trace("parse arithmetic statement"))
-	i, err := func() (Expression, error) {
-		if p.peek(lexINT) || p.peek(lexMINUS) {
-			i, err := p.parseInt()
-			if err != nil {
-				return nil, err
-			}
-			return i, nil
-		} else if p.peek(lexIDENT) {
-			return p.parseIdent(), nil
-		} else {
-			return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
+		if inv {
+			return strconv.ParseInt("-"+p.cur.Lit, 10, 32)
 		}
+		return strconv.ParseInt(p.cur.Lit, 10, 32)
 	}()
 	if err != nil {
 		return nil, err
 	}
-
-	if p.peekR(lexPLUS, lexMINUS, lexTIMES, lexDIV) {
-		a := &arithExpr{
-			left: i,
-		}
-		a.op = p.cur.Lit
-
-		p.acceptR(lexPLUS, lexMINUS, lexTIMES, lexDIV)
-
-		if p.peek(lexINT) || p.peek(lexMINUS) {
-			i, err := p.parseInt()
-			if err != nil {
-				return nil, err
-			}
-			a.right = i
-		} else if p.peek(lexIDENT) {
-			a.right = p.parseIdent()
-		} else {
-			return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
-		}
-		return a, nil
-	}
-	return i, nil
-}
-
-func (p *parser) parseCond() (*boolExpr, error) {
-	defer untrace(trace("parse conditional statement"))
-	b := &boolExpr{}
-	if p.peek(lexINT) || p.peek(lexMINUS) {
-		i, err := p.parseInt()
-		if err != nil {
-			return nil, err
-		}
-		b.left = i
-	} else if p.peek(lexIDENT) {
-		b.left = p.parseIdent()
-	} else {
-		return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
-	}
-
-	b.op = p.cur.Lit
-
-	if !p.acceptR(lexGT, lexGTE, lexLT, lexLTE, lexEQ, lexNEQ) {
-		return nil, fmt.Errorf("Expected < > <= <> = or >=")
-	}
-
-	if p.peek(lexINT) || p.peek(lexMINUS) {
-		i, err := p.parseInt()
-		if err != nil {
-			return nil, err
-		}
-		b.right = i
-	} else if p.peek(lexIDENT) {
-		b.right = p.parseIdent()
-	} else {
-		return nil, fmt.Errorf("Unexpected token %s, expected int or var", p.cur)
-	}
-	return b, nil
+	p.accept(lexINT)
+	return &intLit{val: int32(v)}, nil
 }
 
 func (p *parser) parsePstmt() (*prSt, error) {
 	defer untrace(trace("parse print statement"))
+	p.accept(lexPRINT)
 	if p.peek(lexSTRING) {
 		return &prSt{s: p.parseString()}, nil
 	}
-	if p.peek(lexIDENT) {
-		return &prSt{s: p.parseIdent()}, nil
+	st, err := p.parseExpression()
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("Unexpected token %s, expected string or var", p.cur)
+	return &prSt{s:st}, nil
 }
 
 func (p *parser) parsePlnstmt() (*prlnSt, error) {
-	defer untrace(trace("parse printl statement"))
+	defer untrace(trace("parse println statement"))
+	p.accept(lexPRINTLN)
 	if p.peek(lexSTRING) {
 		return &prlnSt{s: p.parseString()}, nil
 	}
-	if p.peek(lexIDENT) {
-		return &prlnSt{s: p.parseIdent()}, nil
+	st, err := p.parseExpression()
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("Unexpected token %s, expected string or var", p.cur)
+	return &prlnSt{s:st}, nil
 }
 
 func (p *parser) parseString() *strLit {
@@ -434,18 +472,13 @@ func (p *parser) parseString() *strLit {
 
 // BEGIN AST ----------------------------------------------------------------------------------------------------
 
-type Node interface {
-	String() string
-}
-
 type Statement interface {
-	Node
-	statement()
+	Execute() (Jmp, error)
 }
 
 type Expression interface {
-	Node
-	expression()
+	Type() valType
+	Eval() (Val, error)
 }
 
 type lineSt struct {
@@ -453,8 +486,8 @@ type lineSt struct {
 	st    Statement
 }
 
-func (l *lineSt) String() string {
-	return fmt.Sprintf("%v (%v)", l.label, l.st)
+func (l *lineSt) Execute() (Jmp, error) {
+	return l.st.Execute()
 }
 
 type letStatement struct {
@@ -462,41 +495,63 @@ type letStatement struct {
 	expr  Expression
 }
 
-func (l *letStatement) statement() {}
-
-func (l *letStatement) String() string {
-	return fmt.Sprintf("LET %v = %v", l.ident, l.expr)
+func (l *letStatement) Execute() (Jmp, error) {
+	a, err := l.expr.Eval()
+	if err != nil {
+		return nil, err
+	}
+	env[l.ident.lit] = a
+	return cont, nil
 }
 
 type ifStatement struct {
-	cond  *boolExpr
-	label *intLit
+	cond Expression
+	st   Statement
 }
 
-func (l *ifStatement) statement() {}
-
-func (l *ifStatement) String() string {
-	return fmt.Sprintf("IF(%v) THEN GOTO %v", l.cond, l.label)
+func (f *ifStatement) Execute() (Jmp, error) {
+	b, err := f.cond.Eval()
+	if err != nil {
+		return nil, err
+	}
+	if b.Type() != valBool {
+		return nil, fmt.Errorf("Boolean value required")
+	}
+	bb := b.(*boolVal)
+	if bb.Value {
+		return f.st.Execute()
+	}
+	return cont, nil
 }
 
-type prSt struct {
-	s Expression
+type gotoSt struct {
+	label int
 }
 
-func (l *prSt) statement() {}
-
-func (l *prSt) String() string {
-	return fmt.Sprintf("PRINT(%v)", l.s)
+func (g *gotoSt) Execute() (Jmp, error) {
+	return GOTO(g.label), nil
 }
 
-type prlnSt struct {
-	s Expression
+type prSt struct{ s Expression }
+
+func (p *prSt) Execute() (Jmp, error) {
+	v, err := p.s.Eval()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("%v", v)
+	return cont, nil
 }
 
-func (l *prlnSt) statement() {}
+type prlnSt struct{ s Expression }
 
-func (l *prlnSt) String() string {
-	return fmt.Sprintf("PRINTLN(%v)", l.s)
+func (p *prlnSt) Execute() (Jmp, error) {
+	v, err := p.s.Eval()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(v)
+	return cont, nil
 }
 
 type arithExpr struct {
@@ -505,10 +560,23 @@ type arithExpr struct {
 	op    string
 }
 
-func (b *arithExpr) expression() {}
+func (a *arithExpr) Type() valType { return valInt }
 
-func (b *arithExpr) String() string {
-	return fmt.Sprintf("(%v) %s (%v)", b.left, b.op, b.right)
+func (a *arithExpr) Eval() (Val, error) {
+	if a.left.Type() != valInt || a.right.Type() != valInt {
+		return nil, fmt.Errorf("Incorrect types for arithmetic operation")
+	}
+	le, err := a.left.Eval()
+	if err != nil {
+		return nil, err
+	}
+	re, err := a.right.Eval()
+	if err != nil {
+		return nil, err
+	}
+	l := le.(*intVal)
+	r := re.(*intVal)
+	return &intVal{Value: mathOps[a.op](l.Value, r.Value)}, nil
 }
 
 type boolExpr struct {
@@ -517,41 +585,46 @@ type boolExpr struct {
 	op    string
 }
 
-func (b *boolExpr) expression() {}
+func (a *boolExpr) Type() valType { return valInt }
 
-func (b *boolExpr) String() string {
-	return fmt.Sprintf("(%v) %s (%v)", b.left, b.op, b.right)
+func (a *boolExpr) Eval() (Val, error) {
+	if a.left.Type() != valInt || a.right.Type() != valInt {
+		return nil, fmt.Errorf("Incorrect types for boolean operation")
+	}
+	le, err := a.left.Eval()
+	if err != nil {
+		return nil, err
+	}
+	re, err := a.right.Eval()
+	if err != nil {
+		return nil, err
+	}
+	l := le.(*intVal)
+	r := re.(*intVal)
+	return &boolVal{Value: boolOps[a.op](l.Value, r.Value)}, nil
 }
 
-type ident struct {
-	lit string
+type ident struct{ lit string }
+
+func (a *ident) Type() valType      { return a.Get().Type() }
+func (a *ident) Eval() (Val, error) { return a.Get(), nil }
+
+func (a *ident) Get() Val {
+	if g, ok := env[a.lit]; ok {
+		return g
+	}
+	return defVal
 }
 
-func (i *ident) expression() {}
+type intLit struct{ val int32 }
 
-func (b *ident) String() string {
-	return fmt.Sprintf("{{%s}}", b.lit)
-}
+func (i *intLit) Type() valType      { return valInt }
+func (i *intLit) Eval() (Val, error) { return &intVal{Value: i.val}, nil }
 
-type intLit struct {
-	val int32
-}
+type strLit struct{ lit string }
 
-func (i *intLit) expression() {}
-
-func (i *intLit) String() string {
-	return fmt.Sprintf("%d", i.val)
-}
-
-type strLit struct {
-	lit string
-}
-
-func (i *strLit) expression() {}
-
-func (i *strLit) String() string {
-	return fmt.Sprintf("\"%s\"", i.lit)
-}
+func (i *strLit) Type() valType      { return valStr }
+func (i *strLit) Eval() (Val, error) { return &strVal{i.lit}, nil }
 
 // END AST ----------------------------------------------------------------------------------------------------
 
@@ -606,19 +679,32 @@ var boolOps = map[string]func(int32, int32) bool{
 	"=":  func(x, y int32) bool { return x == y },
 }
 
-var mathOps = map[string]func(int32, int32) int32 {
+var mathOps = map[string]func(int32, int32) int32{
 	"+": func(x, y int32) int32 { return x + y },
 	"-": func(x, y int32) int32 { return x - y },
 	"*": func(x, y int32) int32 { return x * y },
 	"/": func(x, y int32) int32 { return x / y },
 }
 
+type valType int32
+
+const (
+	valInt valType = iota
+	valStr
+	valBool
+)
+
 type Val interface {
 	String() string
+	Type() valType
 }
 
 type intVal struct {
 	Value int32
+}
+
+func (i *intVal) Type() valType {
+	return valInt
 }
 
 func (i *intVal) String() string {
@@ -629,6 +715,10 @@ type strVal struct {
 	Value string
 }
 
+func (s *strVal) Type() valType {
+	return valStr
+}
+
 func (i *strVal) String() string {
 	return fmt.Sprintf("%v", i.Value)
 }
@@ -637,124 +727,37 @@ type boolVal struct {
 	Value bool
 }
 
+func (i *boolVal) Type() valType {
+	return valBool
+}
+
 func (i *boolVal) String() string {
 	return fmt.Sprintf("%v", i.Value)
 }
 
-// continue to next line
-type contValImpl struct{}
+type Jmp func(int) int
 
-func (c *contValImpl) String() string {
-	return fmt.Sprintf("Continue")
+func GOTO(l int) func(int) int {
+	return func(int) int {
+		return l
+	}
 }
 
-type jumpVal struct {
-	label int32
+func cont(i int) int {
+	return nxt[i]
 }
-
-func (j *jumpVal) String() string {
-	return fmt.Sprintf("%v", j.label)
-}
-
-var contVal = &contValImpl{}
 
 var defVal = &intVal{Value: 0}
 
-func Eval(n Node) (Val, error) {
-	switch t := n.(type) {
-	case *intLit:
-		return &intVal{Value: t.val}, nil
-	case *strLit:
-		return &strVal{Value: t.lit}, nil
-	case *ident:
-        if g, ok := env[t.lit]; ok {
-            return g, nil
-        }
-        return defVal, nil
-	case *boolExpr:
-		l, err := Eval(t.left)
-		if err != nil {
-			return nil, err
-		}
-		r, err := Eval(t.right)
-		if err != nil {
-			return nil, err
-		}
-		li, ok := l.(*intVal)
-		if !ok {
-			return nil, fmt.Errorf("Incorrect types")
-		}
-		ri, ok := r.(*intVal)
-		if !ok {
-			return nil, fmt.Errorf("Incorrect types")
-		}
-		return &boolVal{Value: boolOps[t.op](li.Value, ri.Value)}, nil
-	case *arithExpr:
-		l, err := Eval(t.left)
-		if err != nil {
-			return nil, err
-		}
-		r, err := Eval(t.right)
-		if err != nil {
-			return nil, err
-		}
-		li, ok := l.(*intVal)
-		if !ok {
-			return nil, fmt.Errorf("Incorrect types")
-		}
-		if r != nil {
-			ri, ok := r.(*intVal)
-			if !ok {
-				return nil, fmt.Errorf("Incorrect types")
-			}
-			return &intVal{Value: mathOps[t.op](li.Value, ri.Value)}, nil
-		} else {
-			return &intVal{Value: li.Value}, nil
-		}
-	case *prSt:
-		l, err := Eval(t.s)
-		if err != nil {
-			return nil, err
-		}
-		fmt.Printf(l.String())
-		return contVal, nil
-	case *prlnSt:
-		l, err := Eval(t.s)
-		if err != nil {
-			return nil, err
-		}
-		fmt.Println(l.String())
-		return contVal, nil
-	case *ifStatement:
-		c, err := Eval(t.cond)
-		if err != nil {
-			return nil, err
-		}
-		b := c.(*boolVal)
-		if b.Value {
-			return &jumpVal{label: t.label.val}, nil
-		}
-        return contVal, nil
-	case *letStatement:
-		a, err := Eval(t.expr)
-		if err != nil {
-			return nil, err
-		}
-		v := a.(*intVal)
-		env[t.ident.lit] = v
-		return contVal, nil
-	case *lineSt:
-		return Eval(t.st)
-	}
-	return nil, fmt.Errorf("Unknown type %T", n)
-}
-
 // END EVAL ----------------------------------------------------------------------------------------------------
 
+var (
+	lines  = make(map[int]*lineSt)
+	nxt    = make(map[int]int)
+	lineNs []int
+)
+
 func main() {
-	lines := make(map[int]*lineSt)
-	nxt := make(map[int]int)
-	lineNs := []int{}
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		txt := scanner.Text()
@@ -764,7 +767,7 @@ func main() {
 		p := newParser(scanner.Text())
 		st, err := p.parseLine()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error parsing line: %v", err)
+			fmt.Fprintf(os.Stderr, "error parsing line: %v\n", err)
 			continue
 		}
 		lineN := st.label.val
@@ -781,16 +784,11 @@ func main() {
 		if cur == -1 {
 			break
 		}
-		v, err := Eval(lines[cur])
+		v, err := lines[cur].Execute()
 		if err != nil {
 			fmt.Printf("Error while evaluating: %v\n", err)
 			break
 		}
-		switch t := v.(type) {
-		case *contValImpl:
-			cur = nxt[cur]
-		case *jumpVal:
-			cur = int(t.label)
-		}
+		cur = v(cur)
 	}
 }
