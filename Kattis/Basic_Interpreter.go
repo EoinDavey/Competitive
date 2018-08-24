@@ -25,6 +25,7 @@ const (
 	lexLET
 	lexPRINT
 	lexPRINTLN
+	lexREAD
 	lexIDENT
 	lexSTRING
 	lexGOTO
@@ -47,10 +48,6 @@ const (
 type lexItem struct {
 	Type lexType
 	Lit  string
-}
-
-func (l lexItem) String() string {
-	return fmt.Sprintf("(%d, %s)", l.Type, l.Lit)
 }
 
 type lexer struct {
@@ -125,6 +122,8 @@ func (l *lexer) next() lexItem {
 			return l.emit(lexGOTO)
 		case "THEN":
 			return l.emit(lexTHEN)
+		case "READ":
+			return l.emit(lexREAD)
 		default:
 			return l.emit(lexIDENT)
 		}
@@ -179,6 +178,195 @@ func (l *lexer) acceptRun(a string) {
 }
 
 // END LEXER -------------------------------------------------------------------------------------------------------
+
+// BEGIN AST ----------------------------------------------------------------------------------------------------
+
+type Statement interface {
+	Execute() (Jmp, error)
+}
+
+type Expression interface {
+	Type() valType
+	Eval() (Val, error)
+}
+
+type lineSt struct {
+	label *intLit
+	st    Statement
+}
+
+func (l *lineSt) Execute() (Jmp, error) {
+	return l.st.Execute()
+}
+
+type letStatement struct {
+	ident *ident
+	expr  Expression
+}
+
+func (l *letStatement) Execute() (Jmp, error) {
+	a, err := l.expr.Eval()
+	if err != nil {
+		return nil, err
+	}
+	env[*l.ident] = a
+	return cont, nil
+}
+
+type ifStatement struct {
+	cond Expression
+	st   Statement
+}
+
+func (f *ifStatement) Execute() (Jmp, error) {
+	b, err := f.cond.Eval()
+	if err != nil {
+		return nil, err
+	}
+	if b.Type() != valBool {
+		return nil, fmt.Errorf("Boolean value required")
+	}
+	bb := b.(boolVal)
+	if bb {
+		return f.st.Execute()
+	}
+	return cont, nil
+}
+
+type readStatement struct{}
+
+func (r *readStatement) Read() (Expression, error) {
+	if !scanner.Scan() {
+		return nil, fmt.Errorf("Couldn't read: %v", scanner.Err())
+	}
+	t := scanner.Text()
+	p := newParser(t)
+	return p.parseExpression()
+}
+
+func (r *readStatement) Execute() (Jmp, error) {
+	_, err := r.Read()
+	if err != nil {
+		return nil, err
+	}
+	return cont, nil
+}
+
+func (r *readStatement) Eval() (Val, error) {
+	e, err := r.Read()
+	if err != nil {
+		return nil, err
+	}
+	return e.Eval()
+}
+
+func (r *readStatement) Type() valType {
+	return valInt
+}
+
+type gotoSt struct {
+	label int
+}
+
+func (g *gotoSt) Execute() (Jmp, error) {
+	return GOTO(g.label), nil
+}
+
+type prSt struct{ s Expression }
+
+func (p *prSt) Execute() (Jmp, error) {
+	v, err := p.s.Eval()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("%v", v)
+	return cont, nil
+}
+
+type prlnSt struct{ s Expression }
+
+func (p *prlnSt) Execute() (Jmp, error) {
+	v, err := p.s.Eval()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(v)
+	return cont, nil
+}
+
+type arithExpr struct {
+	left  Expression
+	right Expression
+	op    string
+}
+
+func (a *arithExpr) Type() valType { return valInt }
+
+func (a *arithExpr) Eval() (Val, error) {
+	if a.left.Type() != valInt || a.right.Type() != valInt {
+		return nil, fmt.Errorf("Incorrect types for arithmetic operation")
+	}
+	le, err := a.left.Eval()
+	if err != nil {
+		return nil, err
+	}
+	re, err := a.right.Eval()
+	if err != nil {
+		return nil, err
+	}
+	l := le.(*intVal)
+	r := re.(*intVal)
+	return &intVal{Value: mathOps[a.op](l.Value, r.Value)}, nil
+}
+
+type boolExpr struct {
+	left  Expression
+	right Expression
+	op    string
+}
+
+func (a *boolExpr) Type() valType { return valBool }
+
+func (a *boolExpr) Eval() (Val, error) {
+	if a.left.Type() != valInt || a.right.Type() != valInt {
+		return nil, fmt.Errorf("Incorrect types for boolean operation")
+	}
+	le, err := a.left.Eval()
+	if err != nil {
+		return nil, err
+	}
+	re, err := a.right.Eval()
+	if err != nil {
+		return nil, err
+	}
+	l := le.(*intVal)
+	r := re.(*intVal)
+	return boolVal(boolOps[a.op](l.Value, r.Value)), nil
+}
+
+type ident string
+
+func (a *ident) Type() valType      { return a.Get().Type() }
+func (a *ident) Eval() (Val, error) { return a.Get(), nil }
+
+func (a *ident) Get() Val {
+	if g, ok := env[*a]; ok {
+		return g
+	}
+	return defVal
+}
+
+type intLit int32
+
+func (i intLit) Type() valType      { return valInt }
+func (i intLit) Eval() (Val, error) { return &intVal{Value: int32(i)}, nil }
+
+type strLit struct{ lit string }
+
+func (i *strLit) Type() valType      { return valStr }
+func (i *strLit) Eval() (Val, error) { return strVal(i.lit), nil }
+
+// END AST ----------------------------------------------------------------------------------------------------
 
 // BEGIN PARSER ----------------------------------------------------------------------------------------------------
 type parser struct {
@@ -270,6 +458,10 @@ func (p *parser) parseStatement() (Statement, error) {
 		return p.parseGOTO()
 	}
 
+	if p.accept(lexREAD) {
+		return &readStatement{}, nil
+	}
+
 	return nil, fmt.Errorf("Unexpected token %v", p.cur)
 }
 
@@ -280,7 +472,7 @@ func (p *parser) parseGOTO() (Statement, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &gotoSt{label: int(v.val)}, nil
+	return &gotoSt{label: int(*v)}, nil
 }
 
 func (p *parser) parseLet() (Statement, error) {
@@ -341,7 +533,10 @@ func(p *parser) parseExpression() (Expression, error) {
 	p.acceptR(lexLT, lexGT, lexGTE, lexLTE, lexEQ, lexNEQ)
 	r, err := p.parseExpression()
 	if err != nil {
-		return nil, fmt.Errorf("Error parsing expression: %v", err)
+		return nil, err
+	}
+	if r.Type() != valInt || l.Type() != valInt {
+		return nil, fmt.Errorf("Type mismatch, expected Int, Int, got %v, %v", r.Type(), l.Type())
 	}
 	return &boolExpr{
 		left: l,
@@ -402,6 +597,9 @@ func (p *parser) parseAt() (Expression, error) {
 	if p.peek(lexIDENT) {
 		return p.parseIdent(), nil
 	}
+	if p.peek(lexREAD) {
+		return &readStatement{}, nil
+	}
 	if p.accept(lexLPAREN) {
 		st, err := p.parseExpression()
 		if err != nil {
@@ -419,7 +617,8 @@ func (p *parser) parseAt() (Expression, error) {
 func (p *parser) parseIdent() *ident {
 	defer untrace(trace("parse ident"))
 	defer p.accept(lexIDENT)
-	return &ident{lit: p.cur.Lit}
+	l := ident(p.cur.Lit)
+	return &l
 }
 
 func (p *parser) parseInt() (*intLit, error) {
@@ -434,7 +633,8 @@ func (p *parser) parseInt() (*intLit, error) {
 		return nil, err
 	}
 	p.accept(lexINT)
-	return &intLit{val: int32(v)}, nil
+	i := intLit(int32(v))
+	return &i, nil
 }
 
 func (p *parser) parsePstmt() (*prSt, error) {
@@ -470,163 +670,6 @@ func (p *parser) parseString() *strLit {
 
 // END PARSER ----------------------------------------------------------------------------------------------------
 
-// BEGIN AST ----------------------------------------------------------------------------------------------------
-
-type Statement interface {
-	Execute() (Jmp, error)
-}
-
-type Expression interface {
-	Type() valType
-	Eval() (Val, error)
-}
-
-type lineSt struct {
-	label *intLit
-	st    Statement
-}
-
-func (l *lineSt) Execute() (Jmp, error) {
-	return l.st.Execute()
-}
-
-type letStatement struct {
-	ident *ident
-	expr  Expression
-}
-
-func (l *letStatement) Execute() (Jmp, error) {
-	a, err := l.expr.Eval()
-	if err != nil {
-		return nil, err
-	}
-	env[l.ident.lit] = a
-	return cont, nil
-}
-
-type ifStatement struct {
-	cond Expression
-	st   Statement
-}
-
-func (f *ifStatement) Execute() (Jmp, error) {
-	b, err := f.cond.Eval()
-	if err != nil {
-		return nil, err
-	}
-	if b.Type() != valBool {
-		return nil, fmt.Errorf("Boolean value required")
-	}
-	bb := b.(*boolVal)
-	if bb.Value {
-		return f.st.Execute()
-	}
-	return cont, nil
-}
-
-type gotoSt struct {
-	label int
-}
-
-func (g *gotoSt) Execute() (Jmp, error) {
-	return GOTO(g.label), nil
-}
-
-type prSt struct{ s Expression }
-
-func (p *prSt) Execute() (Jmp, error) {
-	v, err := p.s.Eval()
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("%v", v)
-	return cont, nil
-}
-
-type prlnSt struct{ s Expression }
-
-func (p *prlnSt) Execute() (Jmp, error) {
-	v, err := p.s.Eval()
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(v)
-	return cont, nil
-}
-
-type arithExpr struct {
-	left  Expression
-	right Expression
-	op    string
-}
-
-func (a *arithExpr) Type() valType { return valInt }
-
-func (a *arithExpr) Eval() (Val, error) {
-	if a.left.Type() != valInt || a.right.Type() != valInt {
-		return nil, fmt.Errorf("Incorrect types for arithmetic operation")
-	}
-	le, err := a.left.Eval()
-	if err != nil {
-		return nil, err
-	}
-	re, err := a.right.Eval()
-	if err != nil {
-		return nil, err
-	}
-	l := le.(*intVal)
-	r := re.(*intVal)
-	return &intVal{Value: mathOps[a.op](l.Value, r.Value)}, nil
-}
-
-type boolExpr struct {
-	left  Expression
-	right Expression
-	op    string
-}
-
-func (a *boolExpr) Type() valType { return valInt }
-
-func (a *boolExpr) Eval() (Val, error) {
-	if a.left.Type() != valInt || a.right.Type() != valInt {
-		return nil, fmt.Errorf("Incorrect types for boolean operation")
-	}
-	le, err := a.left.Eval()
-	if err != nil {
-		return nil, err
-	}
-	re, err := a.right.Eval()
-	if err != nil {
-		return nil, err
-	}
-	l := le.(*intVal)
-	r := re.(*intVal)
-	return &boolVal{Value: boolOps[a.op](l.Value, r.Value)}, nil
-}
-
-type ident struct{ lit string }
-
-func (a *ident) Type() valType      { return a.Get().Type() }
-func (a *ident) Eval() (Val, error) { return a.Get(), nil }
-
-func (a *ident) Get() Val {
-	if g, ok := env[a.lit]; ok {
-		return g
-	}
-	return defVal
-}
-
-type intLit struct{ val int32 }
-
-func (i *intLit) Type() valType      { return valInt }
-func (i *intLit) Eval() (Val, error) { return &intVal{Value: i.val}, nil }
-
-type strLit struct{ lit string }
-
-func (i *strLit) Type() valType      { return valStr }
-func (i *strLit) Eval() (Val, error) { return &strVal{i.lit}, nil }
-
-// END AST ----------------------------------------------------------------------------------------------------
 
 // BEGIN TRACER ----------------------------------------------------------------------------------------------------
 
@@ -668,7 +711,7 @@ func tracef(format string, args ...interface{}) {
 // END TRACER ----------------------------------------------------------------------------------------------------
 // BEGIN EVAL ----------------------------------------------------------------------------------------------------
 
-var env = make(map[string]Val)
+var env = make(map[ident]Val)
 
 var boolOps = map[string]func(int32, int32) bool{
 	"<":  func(x, y int32) bool { return x < y },
@@ -699,9 +742,7 @@ type Val interface {
 	Type() valType
 }
 
-type intVal struct {
-	Value int32
-}
+type intVal struct { Value int32 }
 
 func (i *intVal) Type() valType {
 	return valInt
@@ -711,29 +752,13 @@ func (i *intVal) String() string {
 	return fmt.Sprintf("%v", i.Value)
 }
 
-type strVal struct {
-	Value string
-}
+type strVal string
+func (s strVal) Type() valType { return valStr }
+func (s strVal) String() string { return string(s) }
 
-func (s *strVal) Type() valType {
-	return valStr
-}
-
-func (i *strVal) String() string {
-	return fmt.Sprintf("%v", i.Value)
-}
-
-type boolVal struct {
-	Value bool
-}
-
-func (i *boolVal) Type() valType {
-	return valBool
-}
-
-func (i *boolVal) String() string {
-	return fmt.Sprintf("%v", i.Value)
-}
+type boolVal bool
+func (b boolVal) Type() valType { return valBool }
+func (b boolVal) String() string { return fmt.Sprintf("%v", b) }
 
 type Jmp func(int) int
 
@@ -755,10 +780,11 @@ var (
 	lines  = make(map[int]*lineSt)
 	nxt    = make(map[int]int)
 	lineNs []int
+	scanner *bufio.Scanner
 )
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
+	scanner = bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		txt := scanner.Text()
 		if len(txt) == 0 {
@@ -770,9 +796,12 @@ func main() {
 			fmt.Fprintf(os.Stderr, "error parsing line: %v\n", err)
 			continue
 		}
-		lineN := st.label.val
+		lineN := *st.label
 		lines[int(lineN)] = st
 		lineNs = append(lineNs, int(lineN))
+	}
+	if len(lines) <= 0 {
+		os.Exit(0)
 	}
 	sort.Ints(lineNs)
 	for i := 0; i < len(lineNs)-1; i++ {
@@ -780,15 +809,16 @@ func main() {
 	}
 	nxt[lineNs[len(lineNs)-1]] = -1
 	cur := lineNs[0]
+	scanner = bufio.NewScanner(os.Stdin)
 	for {
 		if cur == -1 {
 			break
 		}
-		v, err := lines[cur].Execute()
+		jump, err := lines[cur].Execute()
 		if err != nil {
 			fmt.Printf("Error while evaluating: %v\n", err)
 			break
 		}
-		cur = v(cur)
+		cur = jump(cur)
 	}
 }
