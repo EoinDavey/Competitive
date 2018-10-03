@@ -2,9 +2,12 @@ typedef complex<double> pt;
 typedef complex<double> vec;
 typedef vector<pt> pgon;
 typedef struct { pt p,q; } lseg;
-double cross(const vec& a, const vec &b){ return x(a)*y(b)-y(a)*x(b); }
+double cross(const vec& a, const vec &b){
+    return x(a)*y(b)-y(a)*x(b);
+}
 //cross product of (b-a) and (c-b), 0 is collinear
-int orientation(const pt& a, const pt& b, const pt& c){
+int orientation(const pt& a,
+        const pt& b, const pt& c){
     double v = cross(b-a,c-b);
     if(abs(v-0.0)<EPS)
         return 0;
@@ -14,8 +17,10 @@ int orientation(const pt& a, const pt& b, const pt& c){
 bool intersects(const lseg& a, const lseg& b){
     if(a.q == b.p || b.q == a.p)
         return false;
-    if(orientation(a.p,a.q,b.p)!=orientation(a.p,a.q,b.q)
-            && orientation(b.p,b.q,a.p) != orientation(b.p,b.q,a.q))
+    if(orientation(a.p,a.q,b.p)
+            !=orientation(a.p,a.q,b.q)
+            && orientation(b.p,b.q,a.p)
+            != orientation(b.p,b.q,a.q))
         return true;
     return false;
 }
@@ -27,7 +32,8 @@ double area(const pgon& p){
     return abs(area)/2.0;
 }
 //If a->b->c is a counterclockwise turn
-double ccw(const point& a, const point& b, const point& c){
+double ccw(const point& a, const point& b,
+        const point& c){
     if(a==b || b==c || a==c)
         return false;
     point relA = b-a;
@@ -43,7 +49,8 @@ bool inPoly(const pgon& poly, const pt& p){
     return true;
 }
 //Distance from p to line (a,b)
-double distToLine(const pt& p, const pt& a, const pt &b){
+double distToLine(const pt& p, const pt& a,
+        const pt &b){
     vec ap = p-a;
     vec ap = b-a;
     double u = dot(ap,ab)/dot(ab,ab);

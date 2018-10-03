@@ -12,7 +12,7 @@ int main(){
     for(int i = 0; i < R; i++){
         int run=0;
         for(int j = 0; j < C; j++){
-            run = (board[i][j] == '.' ? run+1:0);
+            run = (board[i][j]=='.'?run+1:0);
             h[i][j] = run;
         }
     }
@@ -20,16 +20,21 @@ int main(){
     for(int j = 0; j < C; j++){
         stack<int> s;
         for(int i = 0; i < R; i++){
-            if(s.empty() || h[i][j] > h[s.top()][j])
+            if(s.empty()
+                    ||h[i][j]>h[s.top()][j])
                 s.push(i);
-            else if(h[i][j] < h[s.top()][j]){
-                while(!s.empty() && h[i][j] < h[s.top()][j]){
-                    int l = h[s.top()][j]; s.pop();
-                    int pm = perim(l, (s.empty() ? i : i-s.top()-1));
+            else if(h[i][j]<h[s.top()][j]){
+                while(!s.empty()
+                &&h[i][j]<h[s.top()][j]){
+                    int l = h[s.top()][j];
+                    s.pop();
+                    int pm = perim(l,
+                        (s.empty()?
+                         i:i-s.top()-1));
                     mx = max(mx,pm);
                 }
                 s.push(i);
-            } else if(h[i][j] == h[s.top()][j]) {
+            } else if(h[i][j]==h[s.top()][j]){
                 s.pop();
                 s.push(i);
             }

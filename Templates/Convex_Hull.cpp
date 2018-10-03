@@ -1,18 +1,3 @@
-typedef complex<double> point;
-
-double cross(const point& a, const point& b){
-    return real(a)*imag(b) - imag(a)*real(b);
-}
-
-bool ccw(const point& a,const point& b, const point& c){
-    if(a==b || b==c || a==c)
-        return false;
-    point u = b-c;
-    point v = b-a;
-    double cr = cross(u,v);
-    return cr > 0;
-}
-
 int main(){
     for(int i = 0; i < N; i++){
         perm[i]=i;

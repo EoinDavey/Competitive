@@ -1,71 +1,85 @@
 \documentclass[twocolumn]{article}
 \usepackage{verbatim}
-\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage[landscape, a4paper,margin=1in]{geometry}
 \begin{document}
     \title{Templates}
-    {\tiny
+    \lstset{language=c++}
+    {\small
     \section{BFS}
-    \verbatiminput{BFS.cpp}
-    \section{Convex Hull}
-    \verbatiminput{Convex_Hull.cpp}
+    \lstinputlisting[language=c++]{BFS.cpp}
+    \section{Fenwick}
+    \lstinputlisting[language=c++]{Fenwick.cpp}
     \section{Dijkstras}
-    \verbatiminput{Dijkstras.cpp}
+    \lstinputlisting[language=c++]{Dijkstras.cpp}
 
     \newpage
 
-    \section{Fenwick}
-    \verbatiminput{Fenwick.cpp}
+    \section{UFDS}
+    \lstinputlisting[language=c++]{UFDS.cpp}
+    \section{Sparse Table}
+    \lstinputlisting[language=c++]{Sparse_Table.cpp}
+    \section{Convex Hull}
+    \lstinputlisting[language=c++]{Convex_Hull.cpp}
+
+    \newpage
+
     \section{Inversion Count}
-    \verbatiminput{InversionCount.cpp}
-    \section{Maximum Flow}
-    \verbatiminput{Maximum_Flow.cpp}
-    \section{MCBM}
-    \verbatiminput{MCBM.cpp}
+    \lstinputlisting[language=c++]{InversionCount.cpp}
+
+    \newpage
+
+    \section{Edmond Karp Max Flow}
+    \lstinputlisting[language=c++]{Edmond_Karp.cpp}
+
+    \newpage
+
+    \section{Ford Fulkerson Max Flow}
+    \lstinputlisting[language=c++]{Ford_Fulkerson.cpp}
+
+    \newpage
+
     \section{MST}
-    \verbatiminput{MST.cpp}
+    \lstinputlisting[language=c++]{MST.cpp}
 
     \newpage
 
     \section{LCA}
-    \verbatiminput{LCA.cpp}
+    \lstinputlisting[language=c++]{LCA.cpp}
+
+    \newpage
+
     \section{Segment Tree}
-    \verbatiminput{Segment_Tree.cpp}
-
-    \newpage
-
-    \section{RectInHist}
-    \verbatiminput{RectInHist.cpp}
+    \lstinputlisting[language=c++]{Segment_Tree.cpp}
     \section{SCC Tarjans}
-    \verbatiminput{SCC_Tarjans.cpp}
-
-    \newpage
-
+    \lstinputlisting[language=c++]{SCC_Tarjans.cpp}
     \section{NlogN LIS}
-    \verbatiminput{LIS.cpp}
+    \lstinputlisting[language=c++]{LIS.cpp}
+
+    \newpage
+
     \section{AP \& Bridges}
-    \verbatiminput{AP_Bridges.cpp}
-    \section{Sparse Table}
-    \verbatiminput{Sparse_Table.cpp}
-
-    \newpage
-
-    \section{Suffix Array}
-    \verbatiminput{SuffixArray.cpp}
-    \section{Trie}
-    \verbatiminput{Trie.cpp}
-    \section{UFDS}
-    \verbatiminput{UFDS.cpp}
-
-    \newpage
-
-    \section{KMP}
-    \verbatiminput{KMP.cpp}
-    \section{Geometry}
-    \verbatiminput{Geometry.cpp}
+    \lstinputlisting[language=c++]{AP_Bridges.cpp}
     
     \newpage
 
+    \section{Suffix Array}
+    \lstinputlisting[language=c++]{SuffixArray.cpp}
+
+    \newpage
+
+    \section{Trie}
+    \lstinputlisting[language=c++]{Trie.cpp}
+    \section{KMP}
+    \lstinputlisting[language=c++]{KMP.cpp}
+    \section{Geometry}
+    \lstinputlisting[language=c++]{Geometry.cpp}
+
+    \newpage
+
     \section{vimrc}
-    \verbatiminput{.vimrc}
+    \lstinputlisting{.vimrc}
+    \section{RectInHist}
+    \lstinputlisting[language=c++]{RectInHist.cpp}
 }
 \end{document}

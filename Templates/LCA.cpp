@@ -25,5 +25,6 @@ int dist(int u, int v){
     int a = H[u];
     int b = H[v];
     int ind = LCA(u,v);
-    return abs(L[H[ind]] - L[a]) + abs(L[H[ind]] - L[b]);
+    return abs(L[H[ind]]-L[a])
+        + abs(L[H[ind]]-L[b]);
 }

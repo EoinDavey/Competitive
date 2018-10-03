@@ -14,9 +14,11 @@ void mergesort(int L, int R){
     int rp = mid+1;
     while(rp<=R || lp<=mid){
         if(rp<=R && lp <= mid){
-            if(a[rp]<a[lp])
-                n[i]=a[rp],rp++,cnt+=((long long) (mid-lp+1));
-            else
+            if(a[rp]<a[lp]){
+                n[i]=a[rp];
+                rp++;
+                cnt+=((long long) (mid-lp+1));
+            }else
                 n[i]=a[lp],lp++;
         } else if(rp<=R){
             n[i]=a[rp++];
