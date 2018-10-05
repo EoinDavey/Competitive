@@ -5,10 +5,7 @@ int N;
 string s[2];
 int memo[MX_N][2];
 
-void pr(int i){ for(int j = 0; j < i; ++j) putchar(' '); }
 int dp(int i, bool f, int d){
-    //pr(d);
-    //printf("dp(%d,%d)\n",i,f);
     if(memo[i][f] != -1)
         return memo[i][f];
     if(i==0)
@@ -16,8 +13,6 @@ int dp(int i, bool f, int d){
     if(s[f][i]=='A')
         return dp(i-1, f, d+1);
     int cst = 1 + min(dp(i-1, !f, d+1),dp(i-1, f, d+1));
-    //pr(d);
-    //printf("%d\n",cst);
     return memo[i][f] = cst;
 }
 
