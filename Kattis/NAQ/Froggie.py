@@ -8,8 +8,10 @@ def newLane(lane):
 
 def redZ(lane):
     d, O, I, V = lane
-    red = [False]*W
+    if V >= I:
+        return [True]*W
 
+    red = [False]*W
     for pos in xrange(W):
         np = (pos-O + I)%I
         red[pos] = np > 0 and np <= V
@@ -18,13 +20,9 @@ def redZ(lane):
     return red
 
 def getNextBoard(board):
-    nB = []
-    for l in board:
-        nB.append(newLane(l))
-    return nB
+    return map(newLane, board)
 
 L, W = map(int, raw_input().split())
-
 board = []
 for j in xrange(L):
     o,i,v = map(int, raw_input().split())
