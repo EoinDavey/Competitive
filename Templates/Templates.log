@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.9.12)  2 OCT 2018 23:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.9.12)  22 OCT 2018 11:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -170,7 +170,10 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 (./UFDS.cpp) (./Sparse_Table.cpp) (./Convex_Hull.cpp) [2] (./InversionCount.cpp
-) (./Edmond_Karp.cpp) [3] (./Ford_Fulkerson.cpp) (./MST.cpp) [4] (./LCA.cpp)
+) (./Edmond_Karp.cpp) [3] (./Ford_Fulkerson.cpp) (./MST.cpp) [4] (./LCA.cpp
+LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <9> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1.
+)
 (./Segment_Tree.cpp) [5] (./SCC_Tarjans.cpp)
 Underfull \vbox (badness 4752) has occurred while \output is active []
 
@@ -179,27 +182,29 @@ Underfull \vbox (badness 4752) has occurred while \output is active []
 [8] (./Geometry.cpp
 LaTeX Font Info:    Font shape `OML/cmr/m/it' in size <9> not available
 (Font)              Font shape `OML/cmm/m/it' tried instead on input line 34.
-) [9] (./.vimrc) (./RectInHist.cpp) [10] (./Templates.aux) ) 
+) [9] (./.vimrc) (./RectInHist.cpp) [10]
+(./Centroid_Decomp.cpp) [11
+
+] (./Templates.aux) ) 
 Here is how much of TeX's memory you used:
- 2603 strings out of 494855
- 35259 string characters out of 6179189
+ 2619 strings out of 494855
+ 35462 string characters out of 6179189
  156575 words of memory out of 5000000
- 5883 multiletter control sequences out of 15000+600000
+ 5896 multiletter control sequences out of 15000+600000
  6721 words of font info for 24 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  32i,4n,58p,208b,1431s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmti9.pfb>
-Output written on Templates.pdf (10 pages, 118823 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+bx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
+Output written on Templates.pdf (11 pages, 122088 bytes).
 PDF statistics:
- 65 PDF objects out of 1000 (max. 8388607)
- 45 compressed objects within 1 object stream
+ 68 PDF objects out of 1000 (max. 8388607)
+ 47 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
