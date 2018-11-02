@@ -13,8 +13,8 @@ int sz[MX_N/2];
 bool mkd[MX_N/2];
 int vind, H[MX_N/2], E[2*MX_N], L[2*MX_N];
 
+// SEGMENT TREE
 int tree[MX_N*2+MX_N];
-
 void construct(int p, int lind, int rind){
     if(lind==rind){
         tree[p] = lind;
@@ -42,7 +42,9 @@ int rmq(int p, int lind, int rind, int l, int r){
         return lr;
     return L[lr] < L[rr] ? lr : rr;
 }
+// END SEGMENT TREE
 
+// LCA of Tree
 void vis(int u, int d, int p){
     H[u]=vind;
     E[vind] = u;
@@ -62,7 +64,9 @@ inline int lca(int u, int v){
     int ind = rmq(1, H[u], H[v], 0, vind-1);
     return E[ind];
 }
+// END LCA
 
+// Centroid Decomp
 void fill_sz(int u, int p){
     sz[u] = 1;
     for(ii& v : adjList[u]){
@@ -95,6 +99,7 @@ int decomp(int u){
     }
     return cent;
 }
+// END Centroid
 
 void buildRch(int u, int x, int p, set<int> t[], int tgt){
     t[x].insert(u);

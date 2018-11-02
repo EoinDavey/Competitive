@@ -1,6 +1,11 @@
 \documentclass[twocolumn]{article}
 \usepackage{verbatim}
 \usepackage{listings}
+\lstset
+{
+    numbers=left,
+    breaklines=true,
+}
 \usepackage[landscape, a4paper,margin=1in]{geometry}
 \begin{document}
     \title{Templates}
@@ -86,5 +91,8 @@
 
     \section{Centroid Decomposition}
     \lstinputlisting[language=c++]{Centroid_Decomp.cpp}
+
+    \section{Miller Rabin}
+    \lstinputlisting[language=c++]{Miller_Rabin.cpp}
 }
 \end{document}
