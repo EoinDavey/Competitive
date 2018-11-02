@@ -13,16 +13,3 @@ int dfs(int u,int p){
             dfs_low[u] = min(dfs_low[u],dfs_num[v]);
     }
 }
-
-int main(){
-    memset(dfs_num,0,sizeof(dfs_num));
-    memset(dfs_low,0,sizeof(dfs_low));
-    bridge=false;
-    dfs_counter=0;
-    dfs(0,-1);
-    for(int i = 0; i < N; ++i)
-        if(dfs_num[i]==0)
-            bridge=true;
-    puts(bridge ? "Yes" : "No");
-    return 0;
-}

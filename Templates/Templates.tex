@@ -4,95 +4,86 @@
 \lstset
 {
     numbers=left,
+    basicstyle=\footnotesize,
     breaklines=true,
 }
-\usepackage[landscape, a4paper,margin=1in]{geometry}
+\usepackage[landscape, a4paper,margin=0.5in]{geometry}
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{1}
 \begin{document}
-    \title{Templates}
-    \lstset{language=c++}
-    {\small
-    \section{BFS}
-    \lstinputlisting[language=c++]{BFS.cpp}
-    \section{Fenwick}
-    \lstinputlisting[language=c++]{Fenwick.cpp}
-    \section{Dijkstras}
-    \lstinputlisting[language=c++]{Dijkstras.cpp}
-
+    \title{Data Structures and Algorithms for competitive programming}
+    \author{Eoin Davey}
+    \maketitle
+    \tableofcontents
     \newpage
 
-    \section{UFDS}
-    \lstinputlisting[language=c++]{UFDS.cpp}
-    \section{Sparse Table}
-    \lstinputlisting[language=c++]{Sparse_Table.cpp}
-    \section{Convex Hull}
-    \lstinputlisting[language=c++]{Convex_Hull.cpp}
+    \section{Graphs}
 
-    \newpage
+    \subsection{Traversal}
+        \subsubsection{BFS}
+        \lstinputlisting[language=c++]{BFS.cpp}
+        \subsubsection{Dijkstras}
+        \lstinputlisting[language=c++]{Dijkstras.cpp}
 
-    \section{Inversion Count}
-    \lstinputlisting[language=c++]{InversionCount.cpp}
+    \subsection{Trees}
+        \subsubsection{MST}
+        \lstinputlisting[language=c++]{MST.cpp}
+        \subsubsection{LCA}
+        \lstinputlisting[language=c++]{LCA.cpp}
+        \subsubsection{Centroid Decomposition}
+        \lstinputlisting[language=c++]{Centroid_Decomp.cpp}
 
-    \newpage
-
-    \section{Edmond Karp Max Flow}
-    \lstinputlisting[language=c++]{Edmond_Karp.cpp}
-
-    \newpage
-
-    \section{Ford Fulkerson Max Flow}
-    \lstinputlisting[language=c++]{Ford_Fulkerson.cpp}
-
-    \newpage
-
-    \section{MST}
-    \lstinputlisting[language=c++]{MST.cpp}
-
-    \newpage
-
-    \section{LCA}
-    \lstinputlisting[language=c++]{LCA.cpp}
-
-    \newpage
-
-    \section{Segment Tree}
-    \lstinputlisting[language=c++]{Segment_Tree.cpp}
-    \section{SCC Tarjans}
+    \subsection{SCC Tarjans}
     \lstinputlisting[language=c++]{SCC_Tarjans.cpp}
-    \section{NlogN LIS}
-    \lstinputlisting[language=c++]{LIS.cpp}
 
-    \newpage
-
-    \section{AP \& Bridges}
+    \subsection{AP \& Bridges}
     \lstinputlisting[language=c++]{AP_Bridges.cpp}
-    
+
+    \subsection{Network Flow}
+        \subsubsection{Edmond Karp Max Flow}
+        \lstinputlisting[language=c++]{Edmond_Karp.cpp}
+        \subsubsection{Ford Fulkerson Max Flow}
+        \lstinputlisting[language=c++]{Ford_Fulkerson.cpp}
+
     \newpage
-
-    \section{Suffix Array}
-    \lstinputlisting[language=c++]{SuffixArray.cpp}
+    \section{Data Structures}
+        \subsection{Fenwick Tree}
+        \lstinputlisting[language=c++]{Fenwick.cpp}
+        \subsection{UFDS}
+        \lstinputlisting[language=c++]{UFDS.cpp}
+        \subsection{Sparse Table}
+        \lstinputlisting[language=c++]{Sparse_Table.cpp}
+        \subsection{Segment Tree}
+        \lstinputlisting[language=c++]{Segment_Tree.cpp}
 
     \newpage
-
-    \section{Trie}
-    \lstinputlisting[language=c++]{Trie.cpp}
-    \section{KMP}
-    \lstinputlisting[language=c++]{KMP.cpp}
     \section{Geometry}
-    \lstinputlisting[language=c++]{Geometry.cpp}
+        \subsection{Convex Hull}
+        \lstinputlisting[language=c++]{Convex_Hull.cpp}
+        \subsection{Geometry Axioms}
+        \lstinputlisting[language=c++]{Geometry.cpp}
 
     \newpage
+    \section{Strings}
+        \subsection{Suffix Array}
+        \lstinputlisting[language=c++]{SuffixArray.cpp}
+        \subsection{Trie}
+        \lstinputlisting[language=c++]{Trie.cpp}
+        \subsection{KMP}
+        \lstinputlisting[language=c++]{KMP.cpp}
 
-    \section{vimrc}
-    \lstinputlisting{.vimrc}
-    \section{RectInHist}
-    \lstinputlisting[language=c++]{RectInHist.cpp}
 
     \newpage
+    \section{Algorithms}
+        \subsection{Inversion Count}
+        \lstinputlisting[language=c++]{InversionCount.cpp}
+        \subsection{NlogN LIS}
+        \lstinputlisting[language=c++]{LIS.cpp}
+        \subsection{RectInHist}
+        \lstinputlisting[language=c++]{RectInHist.cpp}
 
-    \section{Centroid Decomposition}
-    \lstinputlisting[language=c++]{Centroid_Decomp.cpp}
-
-    \section{Miller Rabin}
-    \lstinputlisting[language=c++]{Miller_Rabin.cpp}
-}
+    \newpage
+    \section{Maths}
+        \subsection{Miller Rabin}
+        \lstinputlisting[language=c++]{Miller_Rabin.cpp}
 \end{document}

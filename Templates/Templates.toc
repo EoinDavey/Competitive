@@ -1,0 +1,31 @@
+\contentsline {section}{\numberline {1}Graphs}{2}
+\contentsline {subsection}{Traversal}{2}
+\contentsline {subsubsection}{BFS}{2}
+\contentsline {subsubsection}{Dijkstras}{2}
+\contentsline {subsection}{Trees}{2}
+\contentsline {subsubsection}{MST}{2}
+\contentsline {subsubsection}{LCA}{2}
+\contentsline {subsubsection}{Centroid Decomposition}{3}
+\contentsline {subsection}{SCC Tarjans}{3}
+\contentsline {subsection}{AP \& Bridges}{3}
+\contentsline {subsection}{Network Flow}{4}
+\contentsline {subsubsection}{Edmond Karp Max Flow}{4}
+\contentsline {subsubsection}{Ford Fulkerson Max Flow}{4}
+\contentsline {section}{\numberline {2}Data Structures}{5}
+\contentsline {subsection}{Fenwick Tree}{5}
+\contentsline {subsection}{UFDS}{5}
+\contentsline {subsection}{Sparse Table}{5}
+\contentsline {subsection}{Segment Tree}{5}
+\contentsline {section}{\numberline {3}Geometry}{6}
+\contentsline {subsection}{Convex Hull}{6}
+\contentsline {subsection}{Geometry Axioms}{6}
+\contentsline {section}{\numberline {4}Strings}{7}
+\contentsline {subsection}{Suffix Array}{7}
+\contentsline {subsection}{Trie}{7}
+\contentsline {subsection}{KMP}{7}
+\contentsline {section}{\numberline {5}Algorithms}{8}
+\contentsline {subsection}{Inversion Count}{8}
+\contentsline {subsection}{NlogN LIS}{8}
+\contentsline {subsection}{RectInHist}{9}
+\contentsline {section}{\numberline {6}Maths}{10}
+\contentsline {subsection}{Miller Rabin}{10}

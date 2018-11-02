@@ -1,13 +1,6 @@
-typedef pair<int, int> ii;
-
-int N,M;
-vector<int> adjList[MX_N];
-int dfs_num[MX_N],dfs_low[MX_N];
-bool vis[MX_N];
 stack<int> scc;
 int dfsCounter=1;
 int sccIdx=1;
-
 map<int, int> sccMap;
 
 void tarjans(int u){
