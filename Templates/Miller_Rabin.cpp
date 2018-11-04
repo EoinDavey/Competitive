@@ -8,7 +8,7 @@ void factor(ll x, ll& e, ll& k){
 
 //increase x for higher certainty, 5 works well
 bool is_prime(ll n, int x){
-    if(n&2LL==0 n==1LL)
+    if(n&2LL==0 || n==1LL)
         return false;
     if(n==2 || n==3 || n==5 || n==7)
         return true;
