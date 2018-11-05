@@ -29,3 +29,4 @@
 \contentsline {subsection}{RectInHist}{9}
 \contentsline {section}{\numberline {6}Maths}{10}
 \contentsline {subsection}{Miller Rabin}{10}
+\contentsline {subsection}{Binomial Coefficients}{10}
