@@ -25,15 +25,3 @@ int count(node* nd, char *s){
         return nd->count;
     }
 }
-
-int main(){
-    node * trie = new node();
-    int N; scanf("%d",&N);
-    char * buff = new char[40];
-    for(int i = 0; i < N; i++){
-        scanf("%s",buff);
-        printf("%d\n",count(trie,buff));
-        insert(trie,buff);
-    }
-    return 0;
-}
