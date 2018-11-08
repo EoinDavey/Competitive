@@ -52,7 +52,7 @@ bool inPoly(const pgon& poly, const pt& p){
 double distToLine(const pt& p, const pt& a,
         const pt &b){
     vec ap = p-a;
-    vec ap = b-a;
+    vec ab = b-a;
     double u = dot(ap,ab)/dot(ab,ab);
     //Ignore for non-line segment
     if(u < 0.0) //Closer to a

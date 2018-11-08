@@ -8,8 +8,8 @@
 \contentsline {subsubsection}{Centroid Decomposition}{3}
 \contentsline {subsection}{SCC Tarjans}{3}
 \contentsline {subsection}{AP \& Bridges}{3}
-\contentsline {subsection}{Network Flow}{4}
-\contentsline {subsubsection}{Edmond Karp Max Flow}{4}
+\contentsline {subsection}{Network Flow}{3}
+\contentsline {subsubsection}{Edmond Karp Max Flow}{3}
 \contentsline {subsubsection}{Ford Fulkerson Max Flow}{4}
 \contentsline {section}{\numberline {2}Data Structures}{5}
 \contentsline {subsection}{Fenwick Tree}{5}
@@ -24,9 +24,8 @@
 \contentsline {subsection}{Trie}{7}
 \contentsline {subsection}{KMP}{7}
 \contentsline {section}{\numberline {5}Algorithms}{8}
-\contentsline {subsection}{Inversion Count}{8}
 \contentsline {subsection}{NlogN LIS}{8}
-\contentsline {subsection}{RectInHist}{9}
-\contentsline {section}{\numberline {6}Maths}{10}
-\contentsline {subsection}{Miller Rabin}{10}
-\contentsline {subsection}{Binomial Coefficients}{10}
+\contentsline {subsection}{RectInHist}{8}
+\contentsline {section}{\numberline {6}Maths}{9}
+\contentsline {subsection}{Miller Rabin}{9}
+\contentsline {subsection}{Binomial Coefficients}{9}
