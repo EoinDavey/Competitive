@@ -1,4 +1,4 @@
-int tree[MX_N*4];
+int tree[MX_N*4 + 2];
 int a[MX_N];
 int N;
 

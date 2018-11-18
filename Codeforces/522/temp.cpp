@@ -3,13 +3,13 @@
 #define fi first
 #define se second
 #define sz(x) x.size()
-#define rd3(x,y,z) cin >> x >> y >> z
-#define rd2(x,y) cin >> x >> y
-#define rd(x) cin >> x
-#define pr3(x,y,z) cout << x << ' ' << y << ' ' << z << endl
-#define pr2(x,y) cout << x << ' ' << y << endl
-#define pr(x) cout << x << endl
-#define debug(x) cout << #x << " = "<< x << ' ' << endl
+#define rd3(x,y,z) cin >> x >> y >> z;
+#define rd2(x,y) cin >> x >> y;
+#define rd(x) cin >> x;
+#define pr3(x,y,z) cout << x << ' ' << y << ' ' << z << endl;
+#define pr2(x,y) cout << x << ' ' << y << endl;
+#define pr(x) cout << x << endl;
+#define debug(x) cout << #x << " = "<< x << ' ' << endl;
 using namespace std;
 typedef long long ll;
 typedef complex<double> cc;
