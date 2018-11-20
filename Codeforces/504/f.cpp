@@ -20,8 +20,34 @@ const int INFI = 1000*1000*1000;
 const ll INFL = 1000LL*1000LL*1000LL*1000LL*1000LL;
 
 const int MX_N = 1000; //TODO
+int N, K, M;
+vi mList[MX_N];
+vector<ii> tList[MX_N];
+int compN[MX_N];
+
+void fill(int u, int c){
+    compN[u] = c;
+    for(int v : mList[u])
+        if(compN[v]==0)
+            fill(v,c);
+}
 
 int main(){
     //ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+    rd3(N,K,M);
+    int u,v,w;
+    for(int i = 0; i < K; ++i){
+        rd2(u,v);
+        mList[u].pb(v);
+        mList[v].pb(u);
+    }
+    for(int i= 0; i < M; ++i){
+        rd3(u,v,w);
+        tList[u].pb({v, w});
+        tList[v].pb({u, w});
+    }
+    for(int i= 1;i <= N; ++i)
+        if(compN[i]==0)
+            fill(i,i);
     return 0;
 }
