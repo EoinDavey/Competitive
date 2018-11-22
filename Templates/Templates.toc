@@ -29,4 +29,6 @@
 \contentsline {section}{\numberline {6}Maths}{9}
 \contentsline {subsection}{Miller Rabin}{9}
 \contentsline {subsection}{Binomial Coefficients}{9}
+\contentsline {subsection}{Gaussian Elimination}{10}
+\contentsline {subsection}{Ternary Search}{10}
 \contentsline {subsection}{Matrix Exponential}{10}
