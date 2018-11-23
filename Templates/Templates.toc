@@ -22,13 +22,13 @@
 \contentsline {section}{\numberline {4}Strings}{7}
 \contentsline {subsection}{Suffix Array}{7}
 \contentsline {subsection}{Trie}{7}
-\contentsline {subsection}{KMP}{7}
-\contentsline {section}{\numberline {5}Algorithms}{8}
-\contentsline {subsection}{NlogN LIS}{8}
-\contentsline {subsection}{RectInHist}{8}
-\contentsline {section}{\numberline {6}Maths}{9}
-\contentsline {subsection}{Miller Rabin}{9}
-\contentsline {subsection}{Binomial Coefficients}{9}
+\contentsline {subsection}{KMP}{8}
+\contentsline {section}{\numberline {5}Algorithms}{9}
+\contentsline {subsection}{NlogN LIS}{9}
+\contentsline {subsection}{RectInHist}{9}
+\contentsline {section}{\numberline {6}Maths}{10}
+\contentsline {subsection}{Miller Rabin}{10}
+\contentsline {subsection}{Binomial Coefficients}{10}
 \contentsline {subsection}{Gaussian Elimination}{10}
-\contentsline {subsection}{Ternary Search}{10}
-\contentsline {subsection}{Matrix Exponential}{10}
+\contentsline {subsection}{Ternary Search}{11}
+\contentsline {subsection}{Matrix Exponential}{11}

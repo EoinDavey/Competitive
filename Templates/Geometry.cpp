@@ -2,6 +2,7 @@ typedef complex<double> pt;
 typedef complex<double> vec;
 typedef vector<pt> pgon;
 typedef struct { pt p,q; } lseg;
+struct circ{ pt c; double r; };
 double cross(const vec& a, const vec &b){
     return x(a)*y(b)-y(a)*x(b);
 }
@@ -61,4 +62,27 @@ double distToLine(const pt& p, const pt& a,
         return abs(b-p);
     pt c = a+ab*u; // This is the point
     return abs(c-p);
+}
+//intersection pts of two circles
+vector<pt> insct(const circ& a, const circ& b){
+    vector<pt> o;
+    double dist = abs(a.c - b.c);
+    if(dist > a.r + b.r)
+        return o; //none, don't touch
+    if(abs(a.r-b.r) > dist)
+        return o; //none, inside
+    if(abs(dist - (a.r + b.r)) < EPS){ // one intersect
+        pt p = a.c + (a.r/dist)*(b.c-a.c);
+        o.pb(p);
+        return o;
+    }
+    double delta = (sq(dist) + (a.r-b.r)*(a.r+b.r))/(2.0*dist);
+    pt cent = a.c + (delta/dist)*(b.c-a.c);
+
+    double h = sqrt(sq(a.r) - sq(delta));
+
+    pt dVec = (b.c - a.c)/dist;
+    o.pb(cent + h*pt(0,1)*dVec);
+    o.pb(cent + h*pt(0,-1)*dVec);
+    return o;
 }
