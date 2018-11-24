@@ -3,6 +3,8 @@ typedef complex<double> vec;
 typedef vector<pt> pgon;
 typedef struct { pt p,q; } lseg;
 struct circ{ pt c; double r; };
+struct rect{ pt p,q;}; // X(p) <= X(q) and Y(p) <= Y(q)
+
 double cross(const vec& a, const vec &b){
     return x(a)*y(b)-y(a)*x(b);
 }
@@ -85,4 +87,17 @@ vector<pt> insct(const circ& a, const circ& b){
     o.pb(cent + h*pt(0,1)*dVec);
     o.pb(cent + h*pt(0,-1)*dVec);
     return o;
+}
+
+// intersection of two rectangles, sets none to true if no overlap
+rect overlap(const rect& a, const rect& b, bool& none){
+    rect r;
+    if(X(a.p) > X(b.q) || Y(a.p) > Y(b.q)
+        || X(b.p) > X(a.q) || Y(b.p) > Y(a.q)){
+        none=true;
+        return r;
+    }
+    r.p = {max(X(a.p),X(b.p)), max(Y(a.p),Y(b.p))};
+    r.q = {min(X(a.q),X(b.q)), min(Y(a.q),Y(b.q))};
+    return r;
 }
