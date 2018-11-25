@@ -16,19 +16,20 @@
 \contentsline {subsection}{UFDS}{5}
 \contentsline {subsection}{Sparse Table}{5}
 \contentsline {subsection}{Segment Tree}{5}
-\contentsline {section}{\numberline {3}Geometry}{6}
-\contentsline {subsection}{Convex Hull}{6}
-\contentsline {subsection}{Geometry Axioms}{6}
-\contentsline {section}{\numberline {4}Strings}{7}
-\contentsline {subsection}{Suffix Array}{7}
-\contentsline {subsection}{Trie}{7}
-\contentsline {subsection}{KMP}{8}
-\contentsline {section}{\numberline {5}Algorithms}{9}
-\contentsline {subsection}{NlogN LIS}{9}
-\contentsline {subsection}{RectInHist}{9}
-\contentsline {section}{\numberline {6}Maths}{10}
-\contentsline {subsection}{Miller Rabin}{10}
-\contentsline {subsection}{Binomial Coefficients}{10}
-\contentsline {subsection}{Gaussian Elimination}{10}
-\contentsline {subsection}{Ternary Search}{11}
-\contentsline {subsection}{Matrix Exponential}{11}
+\contentsline {subsection}{Convex Hull Trick}{5}
+\contentsline {section}{\numberline {3}Geometry}{7}
+\contentsline {subsection}{Convex Hull}{7}
+\contentsline {subsection}{Geometry Axioms}{7}
+\contentsline {section}{\numberline {4}Strings}{8}
+\contentsline {subsection}{Suffix Array}{8}
+\contentsline {subsection}{Trie}{8}
+\contentsline {subsection}{KMP}{9}
+\contentsline {section}{\numberline {5}Algorithms}{10}
+\contentsline {subsection}{NlogN LIS}{10}
+\contentsline {subsection}{RectInHist}{10}
+\contentsline {section}{\numberline {6}Maths}{11}
+\contentsline {subsection}{Miller Rabin}{11}
+\contentsline {subsection}{Binomial Coefficients}{11}
+\contentsline {subsection}{Gaussian Elimination}{11}
+\contentsline {subsection}{Ternary Search}{12}
+\contentsline {subsection}{Matrix Exponential}{12}
