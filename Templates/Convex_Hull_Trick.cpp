@@ -1,8 +1,37 @@
+// Convex hull trick, simpler if can sort insertions and queries
+struct CvxHullTrickSimple {
+    vector<ll> A;
+    vector<ll> B;
+
+    int ptr;
+
+    cvxH():ptr(0){}
+
+    // insert a descending
+    void addLine(ll a, ll b){ // intersection of (A[len-2],B[len-2]) with (A[len-1],B[len-1]) must lie to the left of intersection of (A[len-1],B[len-1]) with (a,b)
+        while (sz(A) >= 2 && (B[sz(B) - 2] - B[sz(B) - 1]) * (a - A[sz(A) - 1]) >= (B[sz(B) - 1] - b) * (A[sz(A) - 1] - A[sz(A) - 2])) {
+            A.pop_back();
+            B.pop_back();
+        }
+        A.pb(a);
+        B.pb(b);
+    }
+
+    // query x ascending
+    ll minValue(ll x) {
+      ptr = min(ptr, sz(A) - 1);
+      while (ptr + 1 < sz(A) && A[ptr + 1] * x + B[ptr + 1] <= A[ptr] * x + B[ptr]) {
+        ++ptr;
+      }
+      return A[ptr] * x + B[ptr];
+    }
+};
+
 struct CvxHullOpt {
     // Fully dynamic variant for use if can't guarantee
     // insertion or query order
     // stores lower envelope, negate lines and function to get upper
-    static const ll qV = -(1LL<<50);
+    static const ll qV = -(1LL<<50); //hacky special value
     struct line {
         ll a,b;
         mutable double xLeft;
