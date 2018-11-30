@@ -4,7 +4,7 @@ int N;
 
 void construct(int p, int L, int R){
     if(L==R){
-        tree[p] = a[L];
+        tree[p] = L;
         return;
     }
     if(R<L)
@@ -12,7 +12,7 @@ void construct(int p, int L, int R){
     int md = (L+R)/2;
     construct(2*p,L,md);
     construct(2*p+1,md+1,R);
-    tree[p] = min(tree[2*p],tree[2*p+1]);
+    tree[p] = a[tree[2*p]] < a[tree[2*p+1]] ? tree[2*p] : tree[2*p+1];
 }
 
 void update(int p, int L, int R, int ind,int v){
@@ -26,7 +26,7 @@ void update(int p, int L, int R, int ind,int v){
         update(2*p,L,md,ind,v);
     else
         update(2*p+1,md+1,R,ind,v);
-    tree[p] = min(tree[2*p],tree[2*p+1]);
+    tree[p] = a[tree[2*p]] < a[tree[2*p+1]] ? tree[2*p] : tree[2*p+1];
 }
 
 int rmq(int p, int L, int R, int l, int r){
@@ -35,5 +35,7 @@ int rmq(int p, int L, int R, int l, int r){
     if(l>=L && r<=R)
         return tree[p];
     int md = (l+r)/2;
-    return min(rmq(2*p,L,R,l,md),rmq(2*p+1,L,R,md+1,r));
+    int lf = rmq(2*p,L,R,l,md);
+    int rf = rmq(2*p+1,L,R,md+1,r);
+    return a[lf] < a[rf] ? lf : rf;
 }

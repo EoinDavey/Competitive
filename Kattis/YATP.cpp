@@ -46,6 +46,55 @@ struct cvxH{
     }
 };
 
+template<class T>
+struct SegTree {
+    int size;
+    vector<int> tree;
+    vector<T> data;
+
+    template <class ForwardIt>
+    SegTree(ForwardIt first, ForwardIt last) : size(distance(first, last)) {
+        tree.resize(4*size+2);
+        data.resize(size);
+        int i = 0; auto j = first;
+        for(; j!=last; i++, j++)
+            update(1, 0, size-1, i, *j);
+    }
+
+    SegTree() : size(0) {}
+
+    void update(int p, int L, int R, int ind, const T& v) {
+        if(L==R){
+            data[ind] = v;
+            tree[p] = ind;
+            return;
+        }
+        int md = (L+R)/2;
+        if(ind <= md)
+            update(2*p,L,md,ind,v);
+        else
+            update(2*p+1,md+1,R,ind,v);
+        tree[p] = (data[tree[2*p]] < data[tree[2*p+1]] ? tree[2*p] : tree[2*p+1]);
+    }
+
+    int rmq(int l, int r){
+        return rmq(1, l, r, 0, size-1);
+    }
+
+    int rmq(int p, int l, int r, int lb, int rb){
+        if(rb < l || lb > r)
+            return -1;
+        if(lb >= l && rb <= r)
+            return tree[p];
+        int md = (lb+rb)/2;
+        int a = rmq(2*p, l, r, lb, md);
+        int b = rmq(2*p+1, l, r, md+1, rb);
+        if(a<0) return b;
+        if(b<0) return a;
+        return (data[a] < data[b] ? a : b);
+    }
+};
+
 const int MX_N = 200002;
 const int VIND_MX = 2*MX_N;
 vector<pair<int, ll> > adjList[MX_N];
@@ -58,41 +107,8 @@ cvxH hulls[MX_N];
 int H[MX_N], E[VIND_MX], L[VIND_MX];
 ll hangDist[MX_N];
 int vind = 0;
-int tree[4*VIND_MX + 4];
 int prm[MX_N];
-
-void construct(int p, int lf, int rf){
-    if(lf==rf){
-        tree[p] = lf;
-        return;
-    }
-    if(rf<lf)
-        return;
-    int md = (lf+rf)/2;
-    construct(2*p,lf,md);
-    construct(2*p+1,md+1,rf);
-    if(tree[2*p] == -1)
-        tree[p] = tree[2*p+1];
-    else if(tree[2*p+1] == -1)
-        tree[p] = tree[2*p];
-    else
-        tree[p] = (L[tree[2*p]] < L[tree[2*p+1]] ? tree[2*p]:tree[2*p+1]);
-}
-
-int rmq(int p, int lf, int rf, int l, int r){
-    if(r < lf || l > rf)
-        return -1;
-    if(l>=lf && r<=rf)
-        return tree[p];
-    int md = (l+r)/2;
-    int a = rmq(2*p,lf,rf,l,md);
-    int b = rmq(2*p+1,lf,rf,md+1,r);
-    if(a==-1)
-        return b;
-    if(b==-1)
-        return a;
-    return (L[a] < L[b] ? a : b);
-}
+SegTree<int> tree;
 
 /*
  * H[u] is first visit of u
@@ -120,7 +136,7 @@ int LCA(int u, int v){
     }
     //run some range min query on L
     //between H[u] and H[v]
-    int ind = rmq(1, H[u],H[v], 0, vind-1);
+    int ind = tree.rmq(H[u],H[v]);
     return E[ind];
 }
 
@@ -203,7 +219,6 @@ ll climb(int u){
 int main(){
     ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
     memset(H, -1, sizeof(H));
-    memset(tree, -1, sizeof(tree));
     rd(N);
     for(int i = 0; i < N; ++i)
         rd(pen[i]);
@@ -219,7 +234,7 @@ int main(){
     fill_hang_dist(0, 0, 0LL);
 
     vis(0, 0);
-    construct(1, 0, vind-1);
+    tree = SegTree<int>(L, L+vind);
 
     int centRoot = decomp(0);
     centP[centRoot] = -1;
