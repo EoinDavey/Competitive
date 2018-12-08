@@ -50,4 +50,3 @@ for grd in cnt:
     if b > mx:
         mx = b
         print grd * a
-
