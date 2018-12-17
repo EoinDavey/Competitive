@@ -1,13 +1,6 @@
 import sys
 from collections import Counter, deque
 
-'''
-ls = [line.strip() for line in sys.stdin]
-
-for l in ls:
-    pass
-'''
-
 s = raw_input().split()
 n = int(s[0])
 last = int(s[6])
