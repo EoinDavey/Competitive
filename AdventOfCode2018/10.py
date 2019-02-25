@@ -13,7 +13,7 @@ def pr(t):
     maxX -= minX
     maxY -= minY
 
-    if maxX*maxY < 1000:
+    if maxX*maxY < 5000:
 
         board = [['.']*(maxY+1) for _ in xrange(maxX+1)]
         
@@ -41,3 +41,5 @@ while True:
         pos[i] = add(pos[i], vel[i])
     st+=1
     pr(st)
+    if st > 12400:
+        break

@@ -18,7 +18,7 @@ void construct(int p, int L, int R){
 void update(int p, int L, int R, int ind,int v){
     if(L==R){
         a[ind] = v;
-        tree[p] = v;
+        tree[p] = ind;
         return;
     }
     int md = (L+R)/2;
@@ -37,5 +37,9 @@ int rmq(int p, int L, int R, int l, int r){
     int md = (l+r)/2;
     int lf = rmq(2*p,L,R,l,md);
     int rf = rmq(2*p+1,L,R,md+1,r);
+    if(lf >= INF)
+        return rf;
+    if(rf >= INF)
+        return lf;
     return a[lf] < a[rf] ? lf : rf;
 }

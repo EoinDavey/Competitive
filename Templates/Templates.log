@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.9.12)  25 NOV 2018 22:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.9.12)  9 FEB 2019 11:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -183,15 +183,11 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <8> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1.
  [2]) (./Centroid_Decomp.cpp) (./SCC_Tarjans.cpp)
 (./AP_Bridges.cpp) (./Edmond_Karp.cpp [3]) (./Ford_Fulkerson.cpp) [4]
-(./Fenwick.cpp) (./UFDS.cpp) (./Sparse_Table.cpp) (./Segment_Tree.cpp)
-(./Convex_Hull_Trick.cpp [5]
+(./Fenwick.cpp) (./UFDS.cpp) (./Sparse_Table.cpp) (./Segment_Tree.cpp) [5]
+(./Convex_Hull_Trick.cpp
 LaTeX Font Info:    Font shape `OML/cmr/m/it' in size <8> not available
 (Font)              Font shape `OML/cmm/m/it' tried instead on input line 47.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-) [6]
-(./Convex_Hull.cpp) (./Geometry.cpp
+) [6] (./Convex_Hull.cpp) (./Geometry.cpp
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [7])
@@ -200,10 +196,10 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 (./Miller_Rabin.cpp) (./Gaussian_Elimination.cpp [11]) (./Ternary_Search.cpp)
 (./Matrix_Power.cpp) [12] (./Templates.aux) ) 
 Here is how much of TeX's memory you used:
- 2734 strings out of 494855
- 36726 string characters out of 6179189
- 422684 words of memory out of 5000000
- 5991 multiletter control sequences out of 15000+600000
+ 2738 strings out of 494855
+ 36754 string characters out of 6179189
+ 416684 words of memory out of 5000000
+ 5995 multiletter control sequences out of 15000+600000
  8556 words of font info for 30 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  34i,7n,61p,260b,1505s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -217,7 +213,7 @@ m/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12
 usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb>
-Output written on Templates.pdf (12 pages, 185314 bytes).
+Output written on Templates.pdf (12 pages, 184996 bytes).
 PDF statistics:
  83 PDF objects out of 1000 (max. 8388607)
  58 compressed objects within 1 object stream

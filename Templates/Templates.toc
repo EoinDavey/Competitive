@@ -16,7 +16,7 @@
 \contentsline {subsection}{UFDS}{5}
 \contentsline {subsection}{Sparse Table}{5}
 \contentsline {subsection}{Segment Tree}{5}
-\contentsline {subsection}{Convex Hull Trick}{5}
+\contentsline {subsection}{Convex Hull Trick}{6}
 \contentsline {section}{\numberline {3}Geometry}{7}
 \contentsline {subsection}{Convex Hull}{7}
 \contentsline {subsection}{Geometry Axioms}{7}
