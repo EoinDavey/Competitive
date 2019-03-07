@@ -2,7 +2,10 @@
  * H[u] is first visit of u
  * E[x] is vertex at time x
  * L[x] is depth at time x
+ * MEMSET H to -1
+ * SET L to size of list * 2
  */
+int vind;
 void vis(int u, int d){
     H[u]=vind;
     E[vind] = u;
