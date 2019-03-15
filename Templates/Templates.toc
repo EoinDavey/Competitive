@@ -8,21 +8,22 @@
 \contentsline {subsubsection}{Centroid Decomposition}{3}
 \contentsline {subsection}{SCC Tarjans}{3}
 \contentsline {subsection}{AP \& Bridges}{3}
-\contentsline {subsection}{Network Flow}{3}
-\contentsline {subsubsection}{Edmond Karp Max Flow}{3}
+\contentsline {subsection}{Network Flow}{4}
+\contentsline {subsubsection}{Edmond Karp Max Flow}{4}
 \contentsline {subsubsection}{Ford Fulkerson Max Flow}{4}
 \contentsline {section}{\numberline {2}Data Structures}{5}
 \contentsline {subsection}{Fenwick Tree}{5}
 \contentsline {subsection}{UFDS}{5}
 \contentsline {subsection}{Sparse Table}{5}
 \contentsline {subsection}{Segment Tree}{5}
+\contentsline {subsection}{Lazy Segment Tree}{6}
 \contentsline {subsection}{Convex Hull Trick}{6}
 \contentsline {section}{\numberline {3}Geometry}{7}
 \contentsline {subsection}{Convex Hull}{7}
 \contentsline {subsection}{Geometry Axioms}{7}
-\contentsline {section}{\numberline {4}Strings}{8}
-\contentsline {subsection}{Suffix Array}{8}
-\contentsline {subsection}{Trie}{8}
+\contentsline {section}{\numberline {4}Strings}{9}
+\contentsline {subsection}{Suffix Array}{9}
+\contentsline {subsection}{Trie}{9}
 \contentsline {subsection}{KMP}{9}
 \contentsline {section}{\numberline {5}Algorithms}{10}
 \contentsline {subsection}{NlogN LIS}{10}
@@ -33,3 +34,4 @@
 \contentsline {subsection}{Gaussian Elimination}{11}
 \contentsline {subsection}{Ternary Search}{12}
 \contentsline {subsection}{Matrix Exponential}{12}
+\contentsline {subsection}{Exponents}{12}
