@@ -1,5 +1,6 @@
 \documentclass[twocolumn]{article}
 \usepackage{verbatim}
+\usepackage{amsmath}
 \usepackage{listings}
 \lstset
 {
@@ -19,11 +20,15 @@
 
     \section{Graphs}
 
-    \subsection{Traversal}
+    \subsection{Search}
         \subsubsection{BFS}
         \lstinputlisting[language=c++]{BFS.cpp}
         \subsubsection{Dijkstras}
         \lstinputlisting[language=c++]{Dijkstras.cpp}
+        \subsubsection{A*}
+        \lstinputlisting[language=c++]{A_Star.cpp}
+        \subsubsection{Bidirectional BFS}
+        \lstinputlisting[language=c++]{Bidir_BFS.cpp}
 
     \subsection{Trees}
         \subsubsection{MST}
@@ -98,4 +103,14 @@
         \lstinputlisting[language=c++]{Matrix_Power.cpp}
         \subsection{Exponents}
         \lstinputlisting[language=c++]{Exponents.cpp}
+        \subsection{Theorems}
+            \subsubsection{Burnsides Lemma}
+            Let $G$ be a finite group that acts on a set $X$. For each $g$ let $X^g$ denote the set of elements in $X$ by $g$.
+            \[ X^g = \{\ x \in X \mid g.x = x \} \]
+            Then the number of orbits is as follows
+            \[ \lvert X/G \rvert  = \frac{1}{\lvert G \rvert} \sum_{g\in G} \lvert X^g \rvert \]
+            \subsubsection{Polya's enumeration theorem}
+            Let $X$ be a finite set and let $G$ be a group of permutations of $X$. Let $Y$ be a finite set of colors so that $Y^X$ is the set of colored arrangements of $X$. Then the number of orbits of $Y^X$ under $G$ is
+            \[\lvert Y^X/G\rvert = \frac{1}{\lvert G \rvert} \sum_{g \in G} \lvert Y \rvert^{c(g)} \]
+            where $c(g)$ is the number of cycles in permutation g.
 \end{document}

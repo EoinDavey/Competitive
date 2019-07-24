@@ -1,37 +1,42 @@
 \contentsline {section}{\numberline {1}Graphs}{2}
-\contentsline {subsection}{Traversal}{2}
+\contentsline {subsection}{Search}{2}
 \contentsline {subsubsection}{BFS}{2}
 \contentsline {subsubsection}{Dijkstras}{2}
-\contentsline {subsection}{Trees}{2}
-\contentsline {subsubsection}{MST}{2}
-\contentsline {subsubsection}{LCA}{2}
+\contentsline {subsubsection}{A*}{2}
+\contentsline {subsubsection}{Bidirectional BFS}{2}
+\contentsline {subsection}{Trees}{3}
+\contentsline {subsubsection}{MST}{3}
+\contentsline {subsubsection}{LCA}{3}
 \contentsline {subsubsection}{Centroid Decomposition}{3}
-\contentsline {subsection}{SCC Tarjans}{3}
-\contentsline {subsection}{AP \& Bridges}{3}
+\contentsline {subsection}{SCC Tarjans}{4}
+\contentsline {subsection}{AP \& Bridges}{4}
 \contentsline {subsection}{Network Flow}{4}
 \contentsline {subsubsection}{Edmond Karp Max Flow}{4}
-\contentsline {subsubsection}{Ford Fulkerson Max Flow}{4}
+\contentsline {subsubsection}{Ford Fulkerson Max Flow}{5}
 \contentsline {section}{\numberline {2}Data Structures}{5}
 \contentsline {subsection}{Fenwick Tree}{5}
 \contentsline {subsection}{UFDS}{5}
 \contentsline {subsection}{Sparse Table}{5}
-\contentsline {subsection}{Segment Tree}{5}
+\contentsline {subsection}{Segment Tree}{6}
 \contentsline {subsection}{Lazy Segment Tree}{6}
 \contentsline {subsection}{Convex Hull Trick}{6}
-\contentsline {section}{\numberline {3}Geometry}{7}
-\contentsline {subsection}{Convex Hull}{7}
-\contentsline {subsection}{Geometry Axioms}{7}
+\contentsline {section}{\numberline {3}Geometry}{8}
+\contentsline {subsection}{Convex Hull}{8}
+\contentsline {subsection}{Geometry Axioms}{8}
 \contentsline {section}{\numberline {4}Strings}{9}
 \contentsline {subsection}{Suffix Array}{9}
 \contentsline {subsection}{Trie}{9}
-\contentsline {subsection}{KMP}{9}
-\contentsline {section}{\numberline {5}Algorithms}{10}
-\contentsline {subsection}{NlogN LIS}{10}
-\contentsline {subsection}{RectInHist}{10}
-\contentsline {section}{\numberline {6}Maths}{11}
-\contentsline {subsection}{Miller Rabin}{11}
-\contentsline {subsection}{Binomial Coefficients}{11}
-\contentsline {subsection}{Gaussian Elimination}{11}
+\contentsline {subsection}{KMP}{10}
+\contentsline {section}{\numberline {5}Algorithms}{11}
+\contentsline {subsection}{NlogN LIS}{11}
+\contentsline {subsection}{RectInHist}{11}
+\contentsline {section}{\numberline {6}Maths}{12}
+\contentsline {subsection}{Miller Rabin}{12}
+\contentsline {subsection}{Binomial Coefficients}{12}
+\contentsline {subsection}{Gaussian Elimination}{12}
 \contentsline {subsection}{Ternary Search}{12}
 \contentsline {subsection}{Matrix Exponential}{12}
-\contentsline {subsection}{Exponents}{12}
+\contentsline {subsection}{Exponents}{13}
+\contentsline {subsection}{Theorems}{13}
+\contentsline {subsubsection}{Burnsides Lemma}{13}
+\contentsline {subsubsection}{Polya's enumeration theorem}{13}
