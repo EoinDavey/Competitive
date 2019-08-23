@@ -10,6 +10,11 @@
 #define pr2(x,y) cout << x << ' ' << y << endl
 #define pr(x) cout << x << endl
 #define debug(x) cout << #x << " = "<< x << ' ' << endl
+#ifdef JUDGE
+#define dbg(x) x
+#else
+#define dbg(x)
+#endif
 using namespace std;
 typedef long long ll;
 typedef complex<double> cc;
