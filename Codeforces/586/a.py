@@ -1,0 +1,5 @@
+n = int(input())
+s = input()
+z = s.count('z')
+o = s.count('n')
+print(' '.join(['1']*o + ['0']*z))
