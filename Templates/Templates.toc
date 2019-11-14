@@ -38,5 +38,5 @@
 \contentsline {subsection}{Matrix Exponential}{12}
 \contentsline {subsection}{Exponents}{13}
 \contentsline {subsection}{Theorems}{13}
-\contentsline {subsubsection}{Burnsides Lemma}{13}
+\contentsline {subsubsection}{Burnside's Lemma}{13}
 \contentsline {subsubsection}{Polya's enumeration theorem}{13}

@@ -1,4 +1,5 @@
 \documentclass[twocolumn]{article}
+\usepackage{fancyhdr}
 \usepackage{verbatim}
 \usepackage{amsmath}
 \usepackage{listings}
@@ -11,8 +12,13 @@
 \usepackage[landscape, a4paper,margin=0.5in]{geometry}
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{1}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Maynooth University - Computational Triumph}
 \begin{document}
-    \title{Data Structures and Algorithms for competitive programming}
+    \title{Data Structures and Algorithms for Competitive Programming}
     \author{Eoin Davey}
     \maketitle
     \tableofcontents
@@ -104,7 +110,7 @@
         \subsection{Exponents}
         \lstinputlisting[language=c++]{Exponents.cpp}
         \subsection{Theorems}
-            \subsubsection{Burnsides Lemma}
+            \subsubsection{Burnside's Lemma}
             Let $G$ be a finite group that acts on a set $X$. For each $g$ let $X^g$ denote the set of elements in $X$ by $g$.
             \[ X^g = \{\ x \in X \mid g.x = x \} \]
             Then the number of orbits is as follows
