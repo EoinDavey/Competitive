@@ -44,4 +44,5 @@ def follow():
 c1, s1 = follow()
 c2, s2 = follow()
 s1 &= s2
-print(min(map(lambda x: c1[x] + c2[x], s1)))
+print("Part B:", min(map(lambda x: abs(x[0]) + abs(x[1]), s1)))
+print("Part A:", min(map(lambda x: c1[x] + c2[x], s1)))

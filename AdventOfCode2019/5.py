@@ -76,5 +76,18 @@ class comp:
             self.fns[op](*args)
 
 ogprog = [int(x) for x in input().split(',')]
-c = comp(ogprog, lambda: 5, print)
+
+a = 0
+def sta(x):
+    global a
+    a = x
+b = 0
+def stb(x):
+    global b
+    b = x
+c = comp(ogprog, lambda: 1, sta)
 c.run()
+c = comp(ogprog, lambda: 5, stb)
+c.run()
+print('Part A', a)
+print('Part B', b)
