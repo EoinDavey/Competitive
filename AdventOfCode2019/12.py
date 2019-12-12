@@ -22,8 +22,6 @@ def b(mnps):
     tms = [0]*3
     for i in range(3):
         ps = [x[i] for x in mnps]
-        s = set()
-        s.add((tuple(ps),(0,0,0,0)))
         vs = [0]*M
         t = 0
         while True:
@@ -34,11 +32,9 @@ def b(mnps):
                     vs[a] -= df
                     vs[b] += df
             ps = ad(ps, vs)
-            key = (ps, tuple(vs))
-            if key in s:
-                tms[i] = t
+            if vs == [0, 0, 0, 0]:
+                tms[i] = 2*t
                 break
-            s.add(key)
     return reduce(lambda a,b:(a*b)//gcd(a,b),tms)
 
 print('Part A:', a(mnps[:]))
