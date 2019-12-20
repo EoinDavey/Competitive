@@ -6,7 +6,7 @@ H = len(board)
 W = len(board[0])
 board = {(x,y) : board[x][y] for x in range(H) for y in range(W)}
 mvs = [(1,0), (-1,0), (0, 1), (0, -1)]
-def inBoard(x,y): return 0 <= x< H and 0 <= y < W
+def inBoard(x,y): return 0<=x<H and 0<=y<W
 
 ogo = [pt for pt in product(range(H), range(W)) if board[pt] == '@'][0]
 newCenter=[
@@ -55,6 +55,14 @@ allkeys = 2**len(keypts) - 1
 memo = {}
 def srch(bots):
     global memo, vis
+    '''
+    print(bots)
+    for x in range(H):
+        rw = ""
+        for y in range(W):
+            rw += board[x,y]
+        print(rw)
+    '''
     key = (tuple(bots), vis)
     if key in memo:
         return memo[key]
@@ -65,23 +73,30 @@ def srch(bots):
     mn = 10000000
     for b in range(len(bots)):
         dists = getDists(bots[b])
+
         for i in range(len(keypts)):
             if (vis&(1<<i))!=0 or i not in dists:
                 continue
-            oldpos = bots[b]
-            vis |= (1<<i)
-            bots[b] = keypts[i]
             if i in keyPt2Dr:
                 door = doors[keyPt2Dr[i]]
                 old = board[door]
+                oldpos = bots[b]
+                board[door] = '.'
+                vis |= (1<<i)
+                bots[b] = keypts[i]
                 sub = srch(bots)
+                bots[b] = oldpos
+                vis ^= (1<<i)
                 board[door] = old
                 mn = min(mn, dists[i] + sub)
             else:
+                oldpos = bots[b]
+                vis |= (1<<i)
+                bots[b] = keypts[i]
                 sub = srch(bots)
+                bots[b] = oldpos
+                vis ^= (1<<i)
                 mn = min(mn, dists[i] + sub)
-            bots[b] = oldpos
-            vis ^= (1<<i)
 
     memo[key] = mn
     return mn
