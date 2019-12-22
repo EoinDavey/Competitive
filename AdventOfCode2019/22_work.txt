@@ -1,0 +1,38 @@
+0 1 2 3 4 5 6 7 8 9
+a = 1
+b = 0
+ax + b
+
+inc of n
+if prev x = y
+f(x) -> n*y % N
+
+rev
+if prev x = y
+f(x) -> N - 1 - y
+
+cut n
+if prev x = y
+f(x) -> (y - n)%N
+
+strt = f(x) = 1x + 0
+
+if prev(x) = ax + b
+rev(x) = -1 - (ax + b) = -ax + (-b - 1)
+inc(x, n) = n*(ax+b) = (na)x + nb
+cut(x, n) = ax + b - n = ax + (b - n)
+
+f(x) = ax + b
+f^2(x) = a(ax + b) + b = a^2x + ab + b
+
+f^n(x) =  ? 
+
+| e f | |f(x)| =  | f(x)e + f |
+| g h | | 1  | =  | gf(x) + h |
+
+f^n(x) =  ? 
+| a b |^n |f(x)|
+| 0 1 |   | 1  |
+
+f^3(x) = a(a^2x + ab + b) + b = 
+       = a^3x + a^2b + ab + b
