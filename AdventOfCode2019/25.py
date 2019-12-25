@@ -123,10 +123,7 @@ def drain():
     s = ""
     while c.outq:
         s += chr(c.outq.popleft())
-    if len(s):
-        sys.stdout.write(s)
     return s
-
 items = [
         'wreath',
         'weather machine',
@@ -141,30 +138,24 @@ def exp(p):
     global c
     s = drain()
     if 'Alert' in s:
-        return
+        return []
     for it in items:
         if it in s:
             say('take '+ it)
             drain()
+    ans = None
     for x in ['north', 'south', 'east', 'west']:
         if not x in s or x == back[p]:
             continue
         say(x)
-        exp(x)
+        e = exp(x)
+        if e != None:
+            ans = [x] + e
         say(back[x])
         drain()
+    return ans
 
-exp('start')
-
-dirs = [
-        'east',
-        'south',
-        'east',
-        'south',
-        'east',
-        'north',
-]
-
+dirs = exp('start')
 for d in dirs:
     say(d)
 drain()
@@ -177,14 +168,10 @@ for i in range(2 ** len(items)):
     for l in ls:
         say('drop ' + l)
     drain()
-    say('west')
+    say(dirs[-1])
     s = drain()
     if 'Alert' not in s:
+        print(s)
         break
     for l in ls:
         say('take ' + l)
-
-while c.run():
-    say(input())
-    drain()
-drain()
