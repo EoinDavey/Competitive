@@ -17,11 +17,7 @@ def partB():
   N = reduce(lambda x, y: x * y[0], inp, 1)
   Ni = [N // a for a, b in inp]
   z = [pow(Ni[i], inp[i][0] - 2, N) for i in range(len(inp))]
-  x = sum([(inp[i][1] * Ni[i] * z[i]) % N for i in range(len(inp))])
-  while x - N > ts:
-    x -= N
-  assert(all([x % a == b for a, b in inp]))
-  print(x)
+  print(sum([(inp[i][1] * Ni[i] * z[i]) % N for i in range(len(inp))]) % N)
 
 partA()
 partB()
