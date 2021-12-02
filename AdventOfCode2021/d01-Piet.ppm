@@ -1,5 +1,7 @@
 P3
-# a piet program d01-Piet.ppm
+# A piet program for AoC day 1 part 1. Requires a negative number to be
+# appended to the end of input to signal EOF, no support for that in Piet.
+# Run with npiet -q, edit with npietedit.
 39 23
 255
 255 255 255  255 255 255  255 255 255  255 255 255  255 255 255  255 255 255 
