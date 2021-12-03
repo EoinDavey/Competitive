@@ -11,3 +11,9 @@ To run `npiet` command just run:
 To launch npietedit run `docker run --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v
 "$PWD:/code" npiet npietedit /code/d01-Piet.ppm`. The `DISPLAY` and `X11` stuff sets up X so the
 GUI can render. You may need to run `xhost +` to enable docker user to connect to X server.
+
+# Running Whitespace
+
+Editor: https://naokikp.github.io/wsi/whitespace.html
+Caveat: Editor crashes at end of input, so append any word that isn't ∈ {forward up down} to the end
+of the input and it will detect the end and print the answer.
