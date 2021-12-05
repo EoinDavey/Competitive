@@ -17,3 +17,8 @@ GUI can render. You may need to run `xhost +` to enable docker user to connect t
 Editor: https://naokikp.github.io/wsi/whitespace.html
 Caveat: Editor crashes at end of input, so append any word that isn't ∈ {forward up down} to the end
 of the input and it will detect the end and print the answer.
+
+# Running TCL
+
+Cmd: `docker run --rm -it  efrecon/tcl`
+E.g `docker run --rm -i -v "$PWD:/opt/tcl" efrecon/tcl /opt/tcl/d05.tcl < d05.txt`
