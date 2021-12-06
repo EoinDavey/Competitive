@@ -27,3 +27,8 @@ get to the correct directory and then run `start(Part1, Part2)`.
 
 Cmd: `docker run --rm -it efrecon/tcl`
 E.g `docker run --rm -i -v "$PWD:/opt/tcl" efrecon/tcl /opt/tcl/d05/d05.tcl < d05/d05.txt`
+
+# Running Scratch
+
+Go to https://scratch.mit.edu/projects/612506357 or load the raw `.sb3` file from the `d06`.
+directory.
