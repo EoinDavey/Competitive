@@ -10,39 +10,15 @@ import sys
 # x   y
 #  zzz
 
-smp = {
-  0: 'tuvxyz',
-  1: 'vy',
-  2: 'tvwxz',
-  3: 'tvyzw',
-  4: 'uvwy',
-  5: 'tuwyz',
-  6: 'tuwxyz',
-  7: 'tvy',
-  8: 'tuvwxyz',
-  9: 'tuvwyz',
-}
-
 def lines():
   return [line.strip() for line in sys.stdin]
 
 inp = [[[set(y) for y in x.split()] for x in l.split(' | ')] for l in lines()]
 
 def partA():
-  cnt = 0
-  for _, b in inp:
-    for x in b:
-      if len(x) in [2, 3, 4, 7]:
-        cnt += 1
-  print(cnt)
+  print(len([x for _, b in inp for x in b if len(x) in [2,3,4,7]]))
 
 lmp = {1: 2, 4: 4, 7: 3, 8: 7}
-def findByLen(i, l):
-  o = []
-  for x in i:
-    if len(x) == l:
-      o.append(x)
-  return o
 
 def partB():
   sm = 0
@@ -50,9 +26,8 @@ def partB():
     # Find 1,4,7,8
     mp = {}
     for k,v in lmp.items():
-      a = findByLen(i, v)
-      assert len(a) == 1
-      mp[k] = a[0]
+      mp[k] = [x for x in i if len(x) == l][0]
+
     t = mp[7] - mp[1]
     uw = mp[4] - mp[1]
     mp[0] = [x for x in i if len(x) == 6 and len(uw - x) != 0][0]
@@ -67,7 +42,6 @@ def partB():
     mp[2] = t|v|w|x|z
     mp[3] = t|v|y|z|w
     mp[6] = t|u|w|x|y|z
-    assert len(mp) == 10
     
     val = 0
     for x in o:
