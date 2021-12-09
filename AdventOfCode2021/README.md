@@ -32,3 +32,12 @@ E.g `docker run --rm -i -v "$PWD:/opt/tcl" efrecon/tcl /opt/tcl/d05/d05.tcl < d0
 
 Go to https://scratch.mit.edu/projects/612506357 or load the raw `.sb3` file from the `d06`.
 directory.
+
+# Running Factor
+
+To start UI editor: `docker run --rm -e DISPLAY=$DISPLAY -v "/tmp/.X11-unix:/tmp/.X11-unix" -v
+"$PWD:/factor/work" factor factor/factor`. Remove the partA and partB from the `d08.factor` file and
+run `USE: d08` to load the `d08` vocabulary.
+
+To run script directly `docker run --rm -i -v "$PWD:/code" factor /factor/factor
+/code/d08/d08.factor < d08/d08.txt`
