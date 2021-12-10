@@ -36,8 +36,11 @@ directory.
 # Running Factor
 
 To start UI editor: `docker run --rm -e DISPLAY=$DISPLAY -v "/tmp/.X11-unix:/tmp/.X11-unix" -v
-"$PWD:/factor/work" factor factor/factor`. Remove the partA and partB from the `d08.factor` file and
-run `USE: d08` to load the `d08` vocabulary.
+"$PWD:/factor/work" factor factor/factor`. Run `USE: d09` in the editor to load the `d09/d09.factor`
+file.
 
-To run script directly `docker run --rm -i -v "$PWD:/code" factor /factor/factor
-/code/d08/d08.factor < d08/d08.txt`
+To run script w/o UI
+- Day 9: `docker run --rm -v "$PWD:/factor/work" factor factor/factor -run=d09` (Reads
+ `d09/d09.txt` file directly).
+- Day 8 (Part 1 only): `docker run --rm -i -v "$PWD:/factor/work" factor factor/factor -run=d08 <
+  d08/d08.txt`.
