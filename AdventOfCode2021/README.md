@@ -33,6 +33,13 @@ E.g `docker run --rm -i -v "$PWD:/opt/tcl" efrecon/tcl /opt/tcl/d05/d05.tcl < d0
 Go to https://scratch.mit.edu/projects/612506357 or load the raw `.sb3` file from the `d06`.
 directory.
 
+# Running Octave
+
+- Run script directly: `docker run --rm -v "$PWD:/code" gnuoctave/octave:6.4.0 octave
+  /code/d08/d08.m`. (Reads directly from the `d08.txt` file).
+- Open octave interactively: `docker run --rm -it -v "$PWD:/code" gnuoctave/octave:6.4.0` and then
+  run `run("/code/d08/d08.m")` to run the code.
+
 # Running Factor
 
 To start UI editor: `docker run --rm -e DISPLAY=$DISPLAY -v "/tmp/.X11-unix:/tmp/.X11-unix" -v
