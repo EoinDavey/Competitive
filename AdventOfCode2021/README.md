@@ -51,3 +51,13 @@ To run script w/o UI
  `d09/d09.txt` file directly).
 - Day 8 (Part 1 only): `docker run --rm -i -v "$PWD:/factor/work" factor factor/factor -run=d08 <
   d08/d08.txt`.
+
+# Running LOGO
+
+- Build the ubclogo docker image from `d10/`. `docker build -t logo .`.
+- The ubclogo binary runs only in a GUI mode so run `docker run --rm -e DISPLAY=$DISPLAY -v
+  "/tmp/.X11-unix:/tmp/.X11-unix" -v "$PWD:/code" logo` to run this with X server connected. You may
+  need to run `xhost +` to allow docker to auth with X server.
+- In the LOGO console run `load "/code/d10/d10.lgo` to load the file. **Note the intentional lack of
+  a closing quote (LOGO weirdness)**.
+- Now run `runProg` to run the program.

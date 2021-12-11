@@ -1,0 +1,106 @@
+to readinp
+    make "file "/code/d10/d10.txt
+    if not memberp :file allopen [ openread :file ]
+    setread :file
+    setreadpos 0
+    make "finished "false
+    make "out []
+    while [ not :finished ] [
+        make "line readrawline
+        ifelse equalp 0 count :line [ make "finished "true ] [ push "out :line ]
+    ]
+    output :out
+end
+
+to isopenp :x
+    output memberp :x "|{[(<|
+end
+
+to openv :b
+    if :b = "|]| [ output "|[| ]
+    if :b = "|}| [ output "|{| ]
+    if :b = "|>| [ output "|<| ]
+    if :b = "|)| [ output "|(| ]
+end
+
+to corruptscore :b
+    if :b = "|)| [ output 3 ]
+    if :b = "|]| [ output 57 ]
+    if :b = "|}| [ output 1197 ]
+    if :b = "|>| [ output 25137 ]
+end
+
+to findillegal :line :stack
+    if emptyp :line [ output 0 ]
+
+    localmake "h first :line
+    localmake "r bf :line
+
+    if isopenp :h [
+        push "stack :h
+        output findillegal :r :stack
+    ]
+
+    if emptyp :stack [ output corruptscore :h ]
+
+    if not equalp pop "stack openv :h [ output corruptscore :h ]
+
+    output findillegal :r :stack
+end
+
+to scorecorruption :x
+    output findillegal :x []
+end
+
+to part1 :inp
+    print sentence [Part 1:] reduce "sum map "scorecorruption :inp
+end
+
+to fillstack :stack :h
+    ifelse isopenp :h [ push "stack :h ] [ ignore pop "stack ]
+    output :stack
+end
+
+to autoscore :b
+    if :b = "|(| [ output 1 ]
+    if :b = "|[| [ output 2 ]
+    if :b = "|{| [ output 3 ]
+    if :b = "|<| [ output 4 ]
+end
+
+to scoreautcomplete :line
+    localmake "stack []
+    foreach :line [ make "stack fillstack :stack ? ]
+
+    localmake "score 0
+    foreach :stack [
+        make "score ( (5 * :score) + (autoscore ?) )
+    ]
+    output :score
+end
+
+to sort :inp
+    make "arr listtoarray :inp
+    for [i 1 [count :inp]] [
+        for [j 2 [count :inp]] [
+            localmake "x item (:j - 1) :arr
+            localmake "y item :j :arr
+            if :x > :y [
+                setitem (:j - 1) :arr :y
+                setitem :j :arr :x
+            ]
+        ]
+    ]
+    output :arr
+end
+
+to part2 :inp
+    make "scores sort map "scoreautcomplete filter [(scorecorruption ?) = 0] :inp
+    print sentence [Part 2:] item (((count :scores) + 1) / 2) :scores
+end
+
+to runProg
+    make "inp readinp
+    part1 :inp
+    part2 :inp
+end
