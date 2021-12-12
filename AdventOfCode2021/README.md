@@ -62,6 +62,11 @@ To run script w/o UI
   a closing quote (LOGO weirdness)**.
 - Now run `runProg` to run the program.
 
+# Running Julia
+
+- Run script: `docker run --rm -i -v "$PWD:/code" -w "/code" julia julia d11/d11.jl < d11/d11.txt`.
+- Open Julia REPL: `docker run --rm -it julia`.
+
 # Running Dart
 
 - `docker run --rm -i -v "$PWD:/code" -w "/code" dart dart run d12/d12.dart < d12/d12.txt`.
