@@ -61,3 +61,7 @@ To run script w/o UI
 - In the LOGO console run `load "/code/d10/d10.lgo` to load the file. **Note the intentional lack of
   a closing quote (LOGO weirdness)**.
 - Now run `runProg` to run the program.
+
+# Running Dart
+
+- `docker run --rm -i -v "$PWD:/code" -w "/code" dart dart run d12/d12.dart < d12/d12.txt`.
