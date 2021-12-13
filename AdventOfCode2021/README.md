@@ -70,3 +70,9 @@ To run script w/o UI
 # Running Dart
 
 - `docker run --rm -i -v "$PWD:/code" -w "/code" dart dart run d12/d12.dart < d12/d12.txt`.
+
+# Running Haskell
+
+- GHCI: `docker run --rm -it haskell`.
+- Run script: `docker run --rm -i -v "$PWD:/code" -w "/code" haskell runhaskell d13/d13.hs <
+  d13/d13.txt`.
