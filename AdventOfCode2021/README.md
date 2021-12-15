@@ -76,3 +76,9 @@ To run script w/o UI
 - GHCI: `docker run --rm -it haskell`.
 - Run script: `docker run --rm -i -v "$PWD:/code" -w "/code" haskell runhaskell d13/d13.hs <
   d13/d13.txt`.
+
+# Running Kotlin
+
+- REPL: `docker run --rm -it zenika/kotlin`
+- Run `.kts` file as script: `docker run --rm -i -v "$PWD:/code" -w "/code" zenika/kotlin kotlinc
+  -script d15_kotlin/d15.kts < d15_kotlin/d15.txt`
