@@ -18,7 +18,7 @@ def valid(x, y, h, w):
 def ns(pt, h, w):
   return [(pt[0] + x, pt[1]+y) for x,y in mvs if valid(pt[0]+x, pt[1]+y, h, w)]
 
-def boardVal(pt, h, w):
+def boardVal(pt):
     bidx = pt[0]//H + pt[1]//W
     bsx, bsy = pt[0] % H, pt[1] % W
     return (board[bsx][bsy] + bidx - 1) % 9 + 1
@@ -32,7 +32,7 @@ def dijk(h,w):
     if dist[pt] < d:
       continue
     for n in ns(pt, h, w):
-      nd = d + boardVal(n, h, w)
+      nd = d + boardVal(n)
       if dist[n] > nd:
         dist[n] = nd
         heappush(q, (nd, n))
