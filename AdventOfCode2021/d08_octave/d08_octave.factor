@@ -1,6 +1,6 @@
 USING: assocs kernel prettyprint hash-sets sets sequences io splitting arrays ;
 USING: math namespaces hashtables ;
-IN: d08
+IN: d08_octave
 
 SYMBOL: len-map
 H{ { 1 2 } { 4 4 } { 7 3 } { 8 7 } } len-map set-global

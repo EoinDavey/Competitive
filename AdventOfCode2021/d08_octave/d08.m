@@ -82,7 +82,7 @@ function part2(inp)
     printf("Part 2: %d\n", sm)
 endfunction
 
-inp = strsplit(fileread("/code/d08/d08.txt"), "\n") ;
+inp = strsplit(fileread("/code/d08_octave/d08.txt"), "\n") ;
 inp(end) = [];
 inp = cellfun("splitInpLine", inp, "UniformOutput", false);
 

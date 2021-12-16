@@ -1,7 +1,7 @@
 USING: arrays assocs formatting hashtables io io.encodings.utf8 io.files ;
 USING: kernel math math.parser math.ranges math.vectors namespaces sequences ;
 USING: sequences.product sorting strings ;
-IN: d09
+IN: d09_factor
 
 : board-at ( board pt -- elt ) swap [ swap nth ] reduce ;
 : inp>board ( lines -- board ) [ [ 1string string>number ] map >array ] map ;
@@ -64,7 +64,7 @@ SYMBOL: mvs
     "Part 2: %d\n" printf ;
 
 : run ( -- )
-    "/factor/work/d09/d09.txt" utf8
+    "/factor/work/d09_factor/d09.txt" utf8
     [
         lines inp>board [ part-1 ] [ part-2 ] bi
     ] with-file-reader ;
