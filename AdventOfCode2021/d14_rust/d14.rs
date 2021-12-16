@@ -3,74 +3,71 @@ use std::io::Read;
 use std::convert::From;
 use std::collections::hash_map::{HashMap};
 
-fn read_inp() -> (String, HashMap<String, String>) {
+type PairsMap = HashMap<(char, char), char>;
+fn read_inp() -> (String, PairsMap) {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
-    let mut lines: Vec<String> = input.lines().map(|x| String::from(x)).collect();
-    let head = lines.remove(0);
-    lines.remove(0);
-    let mp: HashMap<String, String> = lines.iter()
+    let mut lines = input.lines();
+    let head = lines.next().unwrap().to_string();
+    let mp: HashMap<(char,char), char> = lines.skip(1)
         .map(|x| x.split_once(" -> ").unwrap())
-        .map(|(a,b)| (String::from(a), String::from(b)))
+        .map(|(a, b)| {
+            let va: Vec<char> = a.chars().collect();
+            return ((va[0],va[1]), b.chars().next().unwrap());
+        })
         .collect();
-    (head, mp)
+    return (head, mp);
 }
 
-fn union(a: HashMap<String, i64>, b: HashMap<String, i64>) -> HashMap<String, i64> {
-    let mut new: HashMap<String, i64> = HashMap::new();
+type CharCount = HashMap<char, i64>;
+fn union(a: CharCount, b: CharCount) -> CharCount {
+    let mut new: CharCount = HashMap::new();
     for (k, v) in a.into_iter().chain(b.into_iter()) {
-        let nv: i64 = match new.get(&k) {
-            Some(old) => old + v,
-            None => v,
-        };
-        new.insert(k, nv);
+        *new.entry(k).or_default() += v
     }
-    new
+    return new;
 }
 
-fn base_map(l: &str, r: &str) -> HashMap<String, i64> {
-    if l == r {
-        return HashMap::from([(l.to_owned(),2)]);
+fn base_map(l: char, r: char) -> CharCount {
+    return if l == r {
+        HashMap::from([(l,2)])
+    } else {
+        HashMap::from([(l,1), (r,1)])
     }
-    HashMap::from([(l.to_owned(),1), (r.to_owned(),1)])
 }
 
-type Memo = HashMap<(String, String, i32), HashMap<String, i64>>;
-fn solve_pair(memo: &mut Memo, prs: &HashMap<String, String>, l: &str, r: &str, d: i32) -> HashMap<String, i64> {
-    let mk = (l.to_owned(), r.to_owned(), d);
+type Memo = HashMap<(char, char, i32), CharCount>;
+fn solve_pair(memo: &mut Memo, prs: &PairsMap, l: char, r: char, d: i32) -> CharCount {
+    let mk = (l, r, d);
     let mv = memo.get(&mk);
-    if mv.is_some() {
-        return mv.unwrap().clone();
+    if let Some(x) = mv {
+        return x.clone();
     }
-    let k: String = format!("{}{}", l, r);
+    let k: (char,char) = (l, r);
     if !prs.contains_key(&k) || d == 0 {
-        let b = base_map(l, r);
-        return b;
+        return base_map(l, r);
     }
-    let m_opt = prs.get(&k);
-    if m_opt.is_none() {
-        return base_map(l,r);
+    if let Some(m) = prs.get(&k) {
+        let mut u = union(solve_pair(memo, prs, l, *m, d - 1), solve_pair(memo, prs, *m, r, d - 1));
+        u.insert(*m, u[m] - 1);
+        memo.insert(mk, u.clone());
+        return u;
     }
-    let m: &str = m_opt.unwrap();
-    let mut u = union(solve_pair(memo, prs, l, m, d - 1), solve_pair(memo, prs, m, r, d - 1));
-    u.insert(m.to_owned(), u.get(m).unwrap() - 1);
-    memo.insert(mk, u.clone());
-    return u;
+    return base_map(l,r);
 }
 
-
-fn solve_t(memo: &mut Memo, t: &str, prs: &HashMap<String, String>, d: i32) -> i64 {
-    let mut u: HashMap<String, i64> = HashMap::new();
+fn solve_t(memo: &mut Memo, t: &str, prs: &PairsMap, d: i32) -> i64 {
+    let mut u: CharCount = HashMap::new();
     for (i, (a, b)) in t.chars().zip(t.chars().skip(1)).enumerate() {
-        let l = solve_pair(memo, prs, &a.to_string(), &b.to_string(), d);
+        let l = solve_pair(memo, prs, a, b, d);
         u = union(u, l);
         if i > 0 {
-            u.insert(a.to_string(), u.get(&a.to_string()).unwrap() - 1);
+            u.insert(a, u[&a] - 1);
         }
     }
     let mx: i64 = *u.values().max().unwrap();
     let mn: i64 = *u.values().min().unwrap();
-    mx-mn
+    return mx-mn;
 }
 
 fn main() {
