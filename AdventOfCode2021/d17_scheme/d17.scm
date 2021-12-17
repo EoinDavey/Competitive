@@ -40,16 +40,18 @@
 
 (define find-matches
   (lambda (xs ys)
-    (fold append '() (map (lambda (x) (map (lambda (y) (cons (second x) (second y)))
-                          (filter (lambda (y) (= (first x) (first y))) ys)))
-         xs))))
+    (fold append '()
+          (map (lambda (x)
+                   (map (lambda (y) (cons (second x) (second y)))
+                        (filter (lambda (y) (= (first x) (first y))) ys)))
+               xs))))
 
 (define add-x-stops
   (lambda (ys xstops)
     (fold append '()
-          (map (lambda (y) (map (lambda (x) (cons (second x) (second y)))
-                                (filter (lambda (x) (>= (first y) (first x)))
-                                        xstops)))
+          (map (lambda (y)
+                   (map (lambda (x) (cons (second x) (second y)))
+                        (filter (lambda (x) (>= (first y) (first x))) xstops)))
                ys))))
 
 (define (remove-duplicates l)
@@ -67,8 +69,7 @@
     (let* ((xs (find-ts (car rngs) (lambda (x) (>= x 0)) 0 (cdar rngs)))
            (ys (find-ts (cdr rngs) (lambda (y) (>= y (- (cadr rngs) 1))) (cadr rngs) (abs (cadr rngs))))
            (xstops (filter (lambda (x) (= (third x) 0)) xs)))
-      (begin
-       (length (remove-duplicates (append (find-matches xs ys) (add-x-stops ys xstops))))))))
+       (length (remove-duplicates (append (find-matches xs ys) (add-x-stops ys xstops)))))))
 
 (with-input-from-file
  "d17.txt"
@@ -80,5 +81,4 @@
       (newline)
       (display "Part 2: ")
       (display (part-2 rngs))
-      (newline)
-      ))))
+      (newline)))))

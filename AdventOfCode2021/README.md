@@ -83,3 +83,10 @@ To run script w/o UI
 - REPL: `docker run --rm -it zenika/kotlin`
 - Run `.kts` file as script: `docker run --rm -i -v "$PWD:/code" -w "/code" zenika/kotlin kotlinc
   -script d15_kotlin/d15.kts < d15_kotlin/d15.txt`
+
+# Running Scheme
+
+- REPL: `docker run --rm -it sritchie/mit-scheme`.
+- Run `.scm` file: Manually enter bash in the scheme container: `docker run --rm -it -v "$PWD:/code"
+  -w "/code/d17_scheme" --entrypoint=/bin/bash sritchie/mit-scheme` then run `scheme --quiet <
+  d17.scm`.
