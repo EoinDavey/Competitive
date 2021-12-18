@@ -1,0 +1,214 @@
+creatlach Crann {
+    gníomh nua() {
+        c@seo = neamhní
+        d@seo = neamhní
+        t@seo = neamhní
+    }
+    gníomh ord() {
+        toradh ord@c@seo() + ord@d@seo()
+    }
+    gníomh mag() {
+        toradh 3 * mag@c@seo() + 2 * mag@d@seo()
+    }
+    gníomh aimsigh_pléascóir(dmh) {
+        má dmh == 4
+            toradh seo
+        toradh aimsigh_pléascóir@c@seo(dmh + 1) | aimsigh_pléascóir@d@seo(dmh+1)
+    }
+    gníomh aimsigh_scoilteoir() {
+        toradh aimsigh_scoilteoir@c@seo() | aimsigh_scoilteoir@d@seo()
+    }
+    gníomh scríobh() {
+        toradh "[" + scríobh@c@seo() + ", " + scríobh@d@seo() + "]"
+    }
+    gníomh cóip() {
+        c := cóip@c@seo()
+        d := cóip@d@seo()
+        cr := Crann()
+        t@c = cr
+        t@d = cr
+        c@cr = c
+        d@cr = d
+        toradh cr
+    }
+}
+
+creatlach Duilleog {
+    gníomh nua(l) {
+        l@seo = l
+        t@seo = neamhní
+    }
+    gníomh ord() {
+        toradh [seo]
+    }
+    gníomh mag() {
+        toradh l@seo
+    }
+    gníomh aimsigh_pléascóir(dmh) {
+        toradh neamhní
+    }
+    gníomh aimsigh_scoilteoir() {
+        má l@seo >= 10
+            toradh seo
+        toradh neamhní
+    }
+    gníomh scríobh() {
+        toradh go_téacs(l@seo)
+    }
+    gníomh cóip() {
+        toradh Duilleog(l@seo)
+    }
+}
+
+creatlach Pársálaí {
+    >-- ls = ('[' ls ',' ls ']') | num
+    gníomh nua(ls) {
+        ls@seo = ls
+        smh@seo = 0
+    }
+    gníomh uimh() {
+        sm := 0
+        nuair-a smh@seo < fad@ls@seo & "0" <= ls@seo[smh@seo] & ls@seo[smh@seo] <= "9" {
+            sm = 10 * sm + go_uimh(ls@seo[smh@seo])
+            smh@seo += 1
+        }
+        toradh Duilleog(sm)
+    }
+    gníomh tuig_ls() {
+        má ls@seo[smh@seo] == '[' {
+            smh@seo += 1
+
+            c := Crann()
+
+            clé := tuig_ls@seo()
+            c@c = clé
+            t@clé = c
+
+            smh@seo += 1 >-- Léim an camóg
+
+            deas := tuig_ls@seo()
+            d@c = deas
+            t@deas = c
+
+            smh@seo += 1
+            toradh c
+        }
+        toradh uimh@seo()
+    }
+}
+
+gníomh léigh_línte() {
+    línte := []
+    nuair-a fíor {
+        l := léigh_líne()
+        má l == neamhní {
+            bris
+        }
+        cuir_le@línte(tuig_ls@(Pársálaí(l))())
+    }
+    toradh línte
+}
+
+gníomh in_ord(o, d) {
+    le i idir (0, fad@o)
+        má o[i] == d
+            toradh i
+    toradh neamhní
+}
+
+gníomh pléasc(c) {
+    o := ord@c()
+    p := aimsigh_pléascóir@c(0)
+    má p == neamhní
+        toradh bréag
+    smh_c := in_ord(o, c@p)
+    má smh_c > 0 {
+        l@(o[smh_c - 1]) += l@c@p
+    }
+    smh_d := in_ord(o, d@p)
+    má smh_d + 1 < fad@o {
+        l@(o[smh_d + 1]) += l@d@p
+    }
+    t := t@p
+    má p == c@t {
+        c@t = Duilleog(0)
+        t@c@t = t
+    }
+    má p == d@t {
+        d@t = Duilleog(0)
+        t@d@t = t
+    }
+    toradh fíor
+}
+
+gníomh scoilt(cr) {
+    sc := aimsigh_scoilteoir@cr()
+    má sc == neamhní
+        toradh bréag
+    lc := l@sc // 2
+    ld := l@sc - lc
+    c := Crann()
+    t@c = t@sc
+    dc := Duilleog(lc)
+    t@dc = c
+    dd := Duilleog(ld)
+    t@dd = c
+
+    c@c = dc
+    d@c = dd
+
+    má sc == c@t@sc
+        c@t@sc = c
+    má sc == d@t@sc
+        d@t@sc = c
+
+    toradh fíor
+}
+
+gníomh laghdaigh(c) {
+    stop := bréag
+    nuair-a !stop {
+        stop = fíor
+        má pléasc(c) {
+            stop = bréag
+            chun-cinn
+        }
+        má scoilt(c) {
+            stop = bréag
+        }
+    }
+    toradh c
+}
+
+gníomh suimigh(a, b) {
+    c := Crann()
+    c@c = a
+    d@c = b
+    t@a = c
+    t@b = c
+    toradh laghdaigh(c)
+}
+
+liostaí := léigh_línte()
+
+gníomh cuid_1() {
+    sm := cóip@(liostaí[0])()
+    le i idir (1, fad@liostaí)
+        sm = suimigh(sm, cóip@(liostaí[i])())
+    scríobh('Cuid 1:', mag@sm())
+}
+
+gníomh cuid_2() {
+    u := 0
+    le i idir (0, fad@liostaí) {
+        le j idir (0, fad@liostaí) {
+            má i == j
+                chun-cinn
+            u = uas(u, mag@(suimigh(cóip@(liostaí[i])(), cóip@(liostaí[j])()))())
+        }
+    }
+    scríobh('Cuid 2:', u)
+}
+
+cuid_1()
+cuid_2()
