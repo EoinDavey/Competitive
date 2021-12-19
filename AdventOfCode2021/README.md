@@ -90,3 +90,9 @@ To run script w/o UI
 - Run `.scm` file: Manually enter bash in the scheme container: `docker run --rm -it -v "$PWD:/code"
   -w "/code/d17_scheme" --entrypoint=/bin/bash sritchie/mit-scheme` then run `scheme --quiet <
   d17.scm`.
+
+# Running Java
+
+Use the openjdk docker image: `docker run --rm -i -v "$PWD:/code" -w "/code" openjdk java
+d19_java/d19.java < d19_java/d19.txt`. Alternatively use /bin/bash in the same image and run `javac
+d19.java && java d19`.
