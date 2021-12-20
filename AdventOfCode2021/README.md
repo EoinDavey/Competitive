@@ -96,3 +96,11 @@ To run script w/o UI
 Use the openjdk docker image: `docker run --rm -i -v "$PWD:/code" -w "/code" openjdk java
 d19_java/d19.java < d19_java/d19.txt`. Alternatively use /bin/bash in the same image and run `javac
 d19.java && java d19`.
+
+# Running Nim
+
+- Compile: `docker run --rm -i -v "$PWD:/code" -w "/code/d20_nim" nimlang/nim nim compile d20.nim`
+- Compile and Run: `docker run --rm -i -v "$PWD:/code" -w "/code/d20_nim" nimlang/nim nim compile
+  --run d20.nim`
+- Compile for release (with optimisations, much **much faster**): `docker run --rm -i -v
+  "$PWD:/code" -w "/code/d20_nim" nimlang/nim nim compile -d:release d20.nim`
