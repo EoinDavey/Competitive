@@ -34,7 +34,7 @@ def simQDie(scrs, poss, trn):
   if (scrs, poss, trn) in memo:
     return memo[(scrs, poss, trn)]
   res = (0, 0, 0)
-  for a, b, c in product(*[range(1, 4) for _ in range(3)]):
+  for a, b, c in product((1,2,3), repeat=3):
     sm = a + b + c
     npos = addPair(poss, (sm, 0) if trn == 0 else (0, sm))
     npos = ((npos[0] - 1) % 10 + 1, (npos[1] - 1) % 10 + 1)
