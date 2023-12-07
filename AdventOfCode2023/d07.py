@@ -7,16 +7,15 @@ def lines():
 
 INP = [(lambda x: (x[0], int(x[1])))(l.split()) for l in lines()]
 
-def handTypePA(card):
+def handType(card):
   cnts = tuple(sorted(Counter(card).values(), reverse=True))
   return {
-    (5,): 7,
-    (4,1): 6,
-    (3,2): 5,
-    (3,1,1): 4,
-    (2,2,1): 3,
-    (2,1,1,1): 2,
-    (1,1,1,1,1): 1
+    (5,): 7, (4,1): 6, (3,2): 5, (3,1,1): 4, (2,2,1): 3, (2,1,1,1): 2, (1,1,1,1,1): 1,
+    (4,): 7, (3,1): 6, (2,2): 5, (2,1,1): 4, (1,1,1,1): 2,
+    (3,): 7, (2,1): 6, (1,1,1): 4,
+    (2,): 7, (1,1): 6,
+    (1,): 7,
+    (): 7,
   }[cnts]
 
 def valToOrdPA(val):
@@ -25,7 +24,7 @@ def valToOrdPA(val):
   return 'TJQKA'.index(val) + 10
 
 def toOrdTuplePA(card):
-  return (handTypePA(card),) + tuple(valToOrdPA(x) for x in card)
+  return (handType(card),) + tuple(valToOrdPA(x) for x in card)
 
 def partA():
   inpCopy = INP.copy()
@@ -39,21 +38,8 @@ def valToOrdPB(val):
     return int(val)
   return 'TQKA'.index(val) + 10
 
-def handTypePB(card):
-  ocrd = tuple(card)
-  jinxs = [i for i in range(5) if card[i] == 'J']
-  if len(jinxs) == 0:
-    return handTypePA(card)
-  mx = 0
-  for jst in product(*(len(jinxs)*['J23456789TQKA'])):
-    ncrd = list(ocrd)
-    for ji in range(len(jinxs)):
-      ncrd[jinxs[ji]] = jst[ji]
-    mx = max(mx, handTypePA(ncrd))
-  return mx
-
 def toOrdTuplePB(card):
-  return (handTypePB(card),) + tuple(valToOrdPB(x) for x in card)
+  return (handType(c for c in card if c != 'J'),) + tuple(valToOrdPB(x) for x in card)
 
 def partB():
   inpCopy = INP.copy()
