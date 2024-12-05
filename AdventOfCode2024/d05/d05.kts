@@ -20,11 +20,11 @@ fun solve(adjList: Map<Int, Set<Int>>, updates: List<List<Int>>, wantSorted: Boo
 
 fun main(){
   val lines = generateSequence(::readlnOrNull).toList()
-  val pairs: List<Pair<Int, Int>>  = lines.takeWhile{!it.isBlank()}.map{it.split("|").map{it.toInt()}}.map{Pair(it[0], it[1])}
-  val updates: List<List<Int>>  = lines.takeLastWhile{!it.isBlank()}.map{it.split(",").map{it.toInt()}}
+  val pairs: List<Pair<Int, Int>>  = lines.takeWhile{!it.isBlank()}.map{it.split("|").map(String::toInt)}.map{Pair(it[0], it[1])}
+  val updates: List<List<Int>>  = lines.takeLastWhile{!it.isBlank()}.map{it.split(",").map(String::toInt)}
 
   val adjList: Map<Int, Set<Int>> = pairs.groupBy{(a, _) -> a}.mapValues{e -> e.value.map{(_, b) -> b}.toSet()}
   println("Part A: ${solve(adjList, updates, true)}")
-  println("Part A: ${solve(adjList, updates, false)}")
+  println("Part B: ${solve(adjList, updates, false)}")
 }
 main()
