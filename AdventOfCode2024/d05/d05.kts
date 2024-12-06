@@ -3,13 +3,11 @@ fun <T> List<T>.isSortedWith(comp: Comparator<T>): Boolean {
 }
 
 fun solve(adjList: Map<Int, Set<Int>>, updates: List<List<Int>>, wantSorted: Boolean): Int {
-  val comp = object : Comparator<Int> {
-    override fun compare(a: Int, b: Int): Int {
-      return when {
-        a == b -> 0
-        (adjList[a]?.contains(b) ?: false) -> -1
-        else -> 1
-      }
+  val comp: (Int, Int) -> Int = {a, b ->
+    when {
+      a == b -> 0
+      (adjList[a]?.contains(b) ?: false) -> -1
+      else -> 1
     }
   }
   return updates
