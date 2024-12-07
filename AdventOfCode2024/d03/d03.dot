@@ -1,0 +1,65 @@
+// mul([0-9]+,[0-9]+)
+digraph G {
+    rankdir=LR
+    start -> M[label="m"] // 0
+    start -> start[label="else"] // 1
+    start -> print[label="EOF"] // 2
+    
+    M[label="m"]
+    M -> M[label="m"] // 0
+    M->MU[label="u"] //  1
+    M -> start[label="else"] // 2
+    M -> print[label="EOF"] // 3
+    
+    MU[label="mu"]
+    MU -> M[label="m"] // 0
+    MU->MUL[label="l"] // 1
+    MU->start[label="else"] // 2
+    MU -> print[label="EOF"] // 3
+    
+    MUL[label="mul"]
+    MUL->M[label="m"] // 0
+    MUL->MULP[label="("] // 1
+    MUL->start[label="else"] // 2
+    MUL -> print[label="EOF"] // 3
+
+    MULP[label="mul("]
+    MULP->MULPN[label="[0-9]"]
+    MULP->M[label="m"]
+    MULP->start[label="else"]
+    MULP -> print[label="EOF"]
+    
+    MULPN[label="mul(x"]
+    MULPN->MULPN[label="[0-9]"]
+    MULPN->MULPNC[label=","]
+    MULPN->M[label="m"]
+    MULPN->start[label="else"]
+    MULPN -> print[label="EOF"]
+    
+    MULPNC[label="mul(x,"]
+    MULPNC->MULPNCN[label="[0-9]"]
+    MULPNC->M[label="m"]
+    MULPNC->start[label="else"]
+    MULPNC -> print[label="EOF"]
+    
+    MULPNCN[label="mul(x,y"]
+    MULPNCN->MULPNCN[label="[0-9]"]
+    MULPNCN->start[label=")",style="dashed"]
+    MULPNCN->M[label="m"]
+    MULPNCN->start[label="else"]
+    MULPNCN -> print[label="EOF"]
+    
+    print[shape="doublecircle"]
+}
+
+
+/*
+start : [res]
+M: [res]
+MU: [res]
+MUL: [res]
+MULP: [res]
+MULPN: [x res]
+MULPNC: [x res]
+MULPNCN: [y x res]
+*/
