@@ -41,25 +41,25 @@ digraph G {
     // 7 : [x res]
     MULPN[label="mul(x"]
     MULPN->M[label="m"] // 3
-    MULPN->MULPNC[label=","] // 8
     MULPN->MULPN[label="[0-9]"] // 7
+    MULPN->MULPNC[label=","] // 8
     MULPN->start[label="else"] // 1
     MULPN -> print[label="EOF"] // 2
     
-    // 8
+    // 8 [x res]
     MULPNC[label="mul(x,"]
-    MULPNC->MULPNCN[label="[0-9]"]
-    MULPNC->M[label="m"]
-    MULPNC->start[label="else"]
-    MULPNC -> print[label="EOF"]
+    MULPNC->M[label="m"] // 3
+    MULPNC->MULPNCN[label="[0-9]"] // 9 [y x res]
+    MULPNC->start[label="else"] // 1
+    MULPNC -> print[label="EOF"] // 2
     
-    // 9
+    // 9 [y x res]
     MULPNCN[label="mul(x,y"]
-    MULPNCN->MULPNCN[label="[0-9]"]
-    MULPNCN->start[label=")",style="dashed"]
-    MULPNCN->M[label="m"]
-    MULPNCN->start[label="else"]
-    MULPNCN -> print[label="EOF"]
+    MULPNCN->M[label="m"] // 3
+    MULPNCN->MULPNCN[label="[0-9]"] // 9 [y x res]
+    MULPNCN->start[label=")",style="dashed"] // 1 [res + x*y]
+    MULPNCN->start[label="else"] // 1
+    MULPNCN -> print[label="EOF"] // 2
 }
 
 
