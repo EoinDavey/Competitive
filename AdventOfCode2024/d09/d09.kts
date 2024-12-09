@@ -62,9 +62,9 @@ fun partB(inp: List<Int>): Long {
         for(s in 1..newGp.sz)
             gapSets[s].add(newGp)
     }
-    return files.fold(0){acc: Long, (pos, sz, id) ->
+    return files.sumOf{(pos, sz, id) ->
         //    Σi(0..sz-1) (pos + i) * id
-        acc + id.toLong() * (pos * sz + (sz * (sz - 1)) / 2).toLong()
+        id.toLong() * (pos * sz + (sz * (sz - 1)) / 2).toLong()
     }
 }
 
