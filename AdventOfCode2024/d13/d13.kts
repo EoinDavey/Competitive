@@ -1,7 +1,7 @@
 import kotlin.text.Regex
 data class Vec(val x: Long, val y: Long)
 
-val BIG: Long = 10000000000000
+val OFFSET: Long = 10000000000000
 
 fun solve(a: Vec, b: Vec, prz: Vec): Long {
     val det = a.x * b.y - b.x * a.y
@@ -18,18 +18,18 @@ fun solve(a: Vec, b: Vec, prz: Vec): Long {
     return aprs * 3L + bprs
 }
 
-fun partA(inp: List<List<Vec>>) = inp.sumOf{(a, b, prz) -> solve(a, b, prz)}
+fun partA(inp: List<Triple<Vec, Vec, Vec>>) = inp.sumOf{(a, b, prz) -> solve(a, b, prz)}
 
-fun partB(inp: List<List<Vec>>)
-    = inp.sumOf{(a, b, prz) -> solve(a, b, Vec(prz.x + BIG, prz.y + BIG))}
+fun partB(inp: List<Triple<Vec, Vec, Vec>>)
+    = inp.sumOf{(a, b, prz) -> solve(a, b, Vec(prz.x + OFFSET, prz.y + OFFSET))}
 
 fun main() {
-    var ints = Regex("[0-9]+")
-    val lines: List<List<Vec>> = generateSequence(::readlnOrNull)
-        .chunked(4)
-        .map{it.take(3)}
-        .map{it.map{ints.findAll(it).map{it.value.toLong()}.toList()}}
-        .map{it.map{ls -> Vec(ls[0]!!, ls[1]!!)}}
+    val lines: List<Triple<Vec, Vec, Vec>> = generateSequence(::readlnOrNull)
+        .filter{!it.isBlank()}
+        .map{Regex("[0-9]+").findAll(it).map{it.value.toLong()}.toList()}
+        .map{Vec(it[0]!!, it[1]!!)}
+        .chunked(3)
+        .map{(a, b, c) -> Triple(a, b, c)}
         .toList()
     println("Part A: ${partA(lines)}")
     println("Part B: ${partB(lines)}")
