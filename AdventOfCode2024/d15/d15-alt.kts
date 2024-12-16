@@ -1,3 +1,4 @@
+// This version has better worst-case performance, but is slower in reality
 data class Vec(val x: Int, val y: Int) {
     operator fun plus(o: Vec) = Vec(x + o.x, y + o.y)
 }

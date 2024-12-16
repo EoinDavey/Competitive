@@ -1,5 +1,4 @@
 import java.util.PriorityQueue
-import kotlin.math.min
 
 data class Vec(val x: Int, val y: Int) {
     operator fun plus(o: Vec) = Vec(x + o.x, y + o.y)
@@ -23,12 +22,10 @@ fun Grid.find(c: Char): Vec?
     = (0..<h()).firstNotNullOfOrNull{x -> this[x].indexOf(c).takeIf{it != -1}?.let{Vec(x, it)}}
 
 fun runDijk(grid: Grid, s : State): Map<State, Int> {
-    data class DijkKey(val st: State, val dist: Int): Comparable<DijkKey> {
-        override operator fun compareTo(other: DijkKey) = compareValues(dist, other.dist)
-    }
-
+    data class DijkKey(val st: State, val dist: Int)
+    val pq = PriorityQueue<DijkKey>{a, b -> compareValues(a.dist, b.dist)}
     val dist = mutableMapOf<State, Int>(s to 0)
-    val pq = PriorityQueue(listOf(DijkKey(s, 0)))
+    pq.add(DijkKey(s, 0))
     while(!pq.isEmpty()) {
         val (u, d) = pq.poll()
         if(d > dist.get(u)!!)
@@ -53,7 +50,7 @@ fun partA(grid: Grid, s: Vec, e: Vec): Int {
     return (0..3).map{dist[State(e, it)]}.filterNotNull().min()
 }
 
-fun partB(grid: Grid, s: Vec, e: Vec): Int? {
+fun partB(grid: Grid, s: Vec, e: Vec): Int {
     val dist = runDijk(grid, State(s, 1))
     val bst = (0..3).map{dist[State(e, it)]}.filterNotNull().min()
 
