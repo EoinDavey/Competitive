@@ -32,15 +32,7 @@ fun getValidSeqs(a: Char, b: Char, posFunc: (Char) -> Vec, banned: Vec): List<St
     val ud = (if(bp.x < ap.x) "^" else "v").repeat(abs(ap.x - bp.x))
     val lr = (if(bp.y < ap.y) "<" else ">").repeat(abs(ap.y - bp.y))
     return listOf(ud + lr + "A", lr + ud + "A")
-        .filter{
-            var w = ap
-            for(c in it.dropLast(1)){
-                w += mvFromChar(c)
-                if(w == banned)
-                    return@filter false
-            }
-            return@filter true
-        }
+        .filter{banned !in it.dropLast(1).runningFold(ap){w, c -> w + mvFromChar(c)}}
 }
 
 fun numpadSeq(a: Char, b: Char) = getValidSeqs(a, b, ::numpadPos, Vec(3, 0))
