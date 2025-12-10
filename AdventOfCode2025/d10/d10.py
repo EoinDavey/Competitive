@@ -1,7 +1,9 @@
 import sys
+from scipy.optimize import linprog, milp
 import re
 from collections import deque
 from heapq import heappush, heappop, heapify
+from math import floor
 
 def lines():
   return [line.strip() for line in sys.stdin]
@@ -18,13 +20,13 @@ def parse():
 
 INP = parse()
 
-def press(lts, btn):
-  lts = list(lts)
-  for x in btn:
-    lts[x] = '.' if lts[x] == '#' else '#'
-  return tuple(lts)
-
 def shortestPath(lts, btns):
+  def press(lts, btn):
+    lts = list(lts)
+    for x in btn:
+      lts[x] = '.' if lts[x] == '#' else '#'
+    return tuple(lts)
+
   w = len(lts)
   T = tuple(lts)
   S = tuple(['.']*w)
@@ -46,49 +48,23 @@ def shortestPath(lts, btns):
 def partA():
   return sum(shortestPath(lts, btns) for lts, btns, _ in INP)
 
-def aStar(btns, jltg):
-  w = len(jltg)
-  T = tuple(jltg)
-  S = tuple([0]*w)
-  mx_jump = max(len(btn) for btn in btns)
-
-  def pressJ(u, btn):
-    ls = list(u)
+def solveILP(btns, jltg):
+  n = len(jltg)
+  def btn2vec(btn, n):
+    v = [0]*n
     for x in btn:
-      ls[x] += 1
-    return tuple(ls)
+      v[x] = 1
+    return v
+  mat = [list(x) for x in zip(*[btn2vec(btn, n) for btn in btns])]
 
-  def h(u):
-    return sum(T[i] - u[i] for i in range(w)) / mx_jump
+  c = [1]*len(btns)
 
-  def valid(u):
-    return all(u[i] <= T[i] for i in range(w))
-
-  dist = {S: 0}
-  q = [(h(S), S)]
-  heapify(q)
-  while q:
-    dhu, u = heappop(q)
-    du = dhu - h(u)
-    print(h(u))
-    if du > dist[u]:
-      continue
-    if u == T:
-      print(du)
-      return du
-    for btn in btns:
-      v = pressJ(u, btn)
-      if not valid(v):
-        continue
-      dv = du + 1
-      if v in dist and dv >= dist[v]:
-        continue
-      dist[v] = dv
-      dvh = dv + h(v)
-      heappush(q, (dvh, v))
+  res = milp(c, integrality = [1]*len(btns), constraints = (mat, jltg, jltg))
+  return round(res.fun)
 
 def partB():
-  return sum(aStar(btns, jltg) for _, btns, jltg in INP)
+  return sum(solveILP(btns, jltg) for _, btns, jltg in INP)
 
 print(f'Part A: {partA()}')
 print(f'Part B: {partB()}')
+
